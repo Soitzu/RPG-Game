@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "u7rKBcnBBe2LqjwSP2ifqG8UOV3oyHEnC3qmcNjZ1EeUwG5PSDLnJf6oCiPCcJ39SKeZHq4SOEy+KUtmLe7RZg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\nikit\\Documents\\Dev\\Game CS\\Game CS.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\nikit\\.nuget\\packages\\raylib-cs\\7.0.1\\raylib-cs.7.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

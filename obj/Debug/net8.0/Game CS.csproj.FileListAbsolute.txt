@@ -1,0 +1,22 @@
+C:\Users\nikit\Documents\Dev\Game CS\bin\Debug\net8.0\Game CS.exe
+C:\Users\nikit\Documents\Dev\Game CS\bin\Debug\net8.0\Game CS.deps.json
+C:\Users\nikit\Documents\Dev\Game CS\bin\Debug\net8.0\Game CS.runtimeconfig.json
+C:\Users\nikit\Documents\Dev\Game CS\bin\Debug\net8.0\Game CS.dll
+C:\Users\nikit\Documents\Dev\Game CS\bin\Debug\net8.0\Game CS.pdb
+C:\Users\nikit\Documents\Dev\Game CS\bin\Debug\net8.0\Raylib-cs.dll
+C:\Users\nikit\Documents\Dev\Game CS\bin\Debug\net8.0\runtimes\linux-x64\native\libraylib.so
+C:\Users\nikit\Documents\Dev\Game CS\bin\Debug\net8.0\runtimes\osx-arm64\native\libraylib.dylib
+C:\Users\nikit\Documents\Dev\Game CS\bin\Debug\net8.0\runtimes\osx-x64\native\libraylib.dylib
+C:\Users\nikit\Documents\Dev\Game CS\bin\Debug\net8.0\runtimes\win-x64\native\raylib.dll
+C:\Users\nikit\Documents\Dev\Game CS\bin\Debug\net8.0\runtimes\win-x86\native\raylib.dll
+C:\Users\nikit\Documents\Dev\Game CS\obj\Debug\net8.0\Game CS.csproj.AssemblyReference.cache
+C:\Users\nikit\Documents\Dev\Game CS\obj\Debug\net8.0\Game CS.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\nikit\Documents\Dev\Game CS\obj\Debug\net8.0\Game CS.AssemblyInfoInputs.cache
+C:\Users\nikit\Documents\Dev\Game CS\obj\Debug\net8.0\Game CS.AssemblyInfo.cs
+C:\Users\nikit\Documents\Dev\Game CS\obj\Debug\net8.0\Game CS.csproj.CoreCompileInputs.cache
+C:\Users\nikit\Documents\Dev\Game CS\obj\Debug\net8.0\Game CS.csproj.CopyComplete
+C:\Users\nikit\Documents\Dev\Game CS\obj\Debug\net8.0\Game CS.dll
+C:\Users\nikit\Documents\Dev\Game CS\obj\Debug\net8.0\refint\Game CS.dll
+C:\Users\nikit\Documents\Dev\Game CS\obj\Debug\net8.0\Game CS.pdb
+C:\Users\nikit\Documents\Dev\Game CS\obj\Debug\net8.0\Game CS.genruntimeconfig.cache
+C:\Users\nikit\Documents\Dev\Game CS\obj\Debug\net8.0\ref\Game CS.dll
