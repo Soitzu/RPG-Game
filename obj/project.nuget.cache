@@ -1,10 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "u7rKBcnBBe2LqjwSP2ifqG8UOV3oyHEnC3qmcNjZ1EeUwG5PSDLnJf6oCiPCcJ39SKeZHq4SOEy+KUtmLe7RZg==",
+  "dgSpecHash": "FUugtFKOcGc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\nikit\\Documents\\Dev\\Game CS\\Game CS.csproj",
+  "projectFilePath": "/Users/nikita/Dev/RPG-Game/Game CS.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\nikit\\.nuget\\packages\\raylib-cs\\7.0.1\\raylib-cs.7.0.1.nupkg.sha512"
+    "/Users/nikita/.nuget/packages/raylib-cs/7.0.1/raylib-cs.7.0.1.nupkg.sha512",
+    "/Users/nikita/.nuget/packages/microsoft.netcore.app.ref/8.0.15/microsoft.netcore.app.ref.8.0.15.nupkg.sha512",
+    "/Users/nikita/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.15/microsoft.aspnetcore.app.ref.8.0.15.nupkg.sha512",
+    "/Users/nikita/.nuget/packages/microsoft.netcore.app.host.osx-arm64/8.0.15/microsoft.netcore.app.host.osx-arm64.8.0.15.nupkg.sha512"
   ],
   "logs": []
 }

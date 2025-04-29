@@ -7,8 +7,9 @@ namespace HelloWorld;
 
 public class Constants
 {
-  public const int SCREEN_WIDTH = 1280;
-  public const int SCREEN_HEIGHT = 1080;
+    public const int SCREEN_WIDTH = 1280;
+    public const int SCREEN_HEIGHT = 1080;
+    public const int CHARACTER_SIZE = 100;
 }
 
 
@@ -21,8 +22,8 @@ class Program
         Vector2 startPosition = new Vector2(100 + 50, 100 + 50);
         Raylib.InitWindow(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT, "Mini Adventurer");
         Texture2D soldier = Raylib.LoadTexture("Sprites/Characters/Soldier/Soldier/Soldier.png");
-        Character hero = new Character("Nikita", 50, 50, new Animator(soldier), startPosition);
-        
+        Character hero = new Character("Nikita", 50, 50, new Animator(soldier), startPosition, Constants.CHARACTER_SIZE);
+
 
         while (!Raylib.WindowShouldClose())
         {
