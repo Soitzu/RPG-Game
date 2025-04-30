@@ -25,9 +25,9 @@ namespace Game.Models
                 Velocity = new Vector2(Velocity.X, Velocity.Y + Gravity * deltaTime);
             }
 
-            if (Position.Y > 500)
+            if (Position.Y + Size / 2 > 500)
             {
-                Position = new Vector2(Position.X, 500);
+                Position = new Vector2(Position.X, 500 - Size / 2);
                 Velocity = new Vector2(Velocity.X, 0);
             }
 
