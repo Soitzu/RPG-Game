@@ -14,6 +14,11 @@ namespace Game.Models
         private int soldierIdleCount = 6;
         private float animationTimer = 0f;
         private float animationInterval = 0.1f;
+        //  Idle, Move, Attack
+        private int[] framesPerRow = new int[] { 6, 8, 6 };
+        //  Idle, Move, Attack
+        private float[] animationIntervals = new float[] { 0.1f, 0.1f, 0.1f };
+        private int lastSpriteRow = -1;
 
 
         public Animator(Texture2D sprite)
@@ -22,15 +27,35 @@ namespace Game.Models
         }
 
 
-        public void Update(float deltaTime)
+        public void Reset()
         {
+            characterIndex = 0;
+            animationTimer = 0f;
+        }
+
+        public void SetAnimation(int row)
+        {
+            soldierIdleCount = framesPerRow[row];
+            Reset();
+        }
+
+        public float GetAttackDuration()
+        {
+            return framesPerRow[2] * animationIntervals[2];
+        }
+
+
+        public void Update(float deltaTime, int spriteRow)
+        {
+
+            float interval = animationIntervals[spriteRow];
 
             animationTimer += deltaTime;
 
-            if (animationTimer >= animationInterval)
+            if (animationTimer >= interval)
             {
                 characterIndex++;
-                if (characterIndex >= soldierIdleCount)
+                if (characterIndex >= framesPerRow[spriteRow])
                 {
                     characterIndex = 0;
 
@@ -47,6 +72,13 @@ namespace Game.Models
             float height = characterSize * 5;
 
             float direction = 1;
+
+            if (spriteRow != lastSpriteRow)
+            {
+                SetAnimation(spriteRow);
+                lastSpriteRow = spriteRow;
+            }
+
             if (isFacingLeft == true)
             {
                 direction = -1;

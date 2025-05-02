@@ -17,10 +17,14 @@ namespace Game.Models
 
         public bool IsFacingLeft = false;
         public Vector2 Position { get; private set; }
+        private bool IsAttacking = false;
+        private float AttackTimer = 0f;
+        private float AttackDuration = 0.5f;
 
 
 
-        public Character(string name, int health, int strength, Animator animator, Vector2 startPosition, float characterSize = 100f, float mass = 1.0f)
+
+        public Character(string name, int health, int strength, Animator animator, Vector2 startPosition, float characterSize, float mass = 1.0f)
         {
             Name = name;
             Health = health;
@@ -32,34 +36,91 @@ namespace Game.Models
 
 
 
-        public void Attack(Character target)
+        public void Attack()
         {
-            target.Health -= Strength;
+            IsAttacking = true;
+            AttackTimer = Animator.GetAttackDuration();
+            SoldierSpriteRow = 2;
+            Animator.Reset();
+            SoundManager.PlaySound("attack_swing");
         }
+
+        public void Jump(float jumpStrength)
+        {
+            if (Physics.IsOnGround)
+            {
+                Physics.Velocity = new Vector2(Physics.Velocity.X, -jumpStrength);
+
+            }
+        }
+
+        public void MoveRight(float speed)
+        {
+
+            IsFacingLeft = false;
+            SoldierSpriteRow = 1;
+            Physics.Velocity = new Vector2(speed, Physics.Velocity.Y);
+
+        }
+
+        public void MoveLeft(float speed)
+        {
+            IsFacingLeft = true;
+            SoldierSpriteRow = 1;
+            Physics.Velocity = new Vector2(-speed, Physics.Velocity.Y);
+        }
+
+
+
 
         public void Update(float deltaTime)
         {
             float speed = 200f;
             SoldierSpriteRow = 0;
-            var velocity = Physics.Velocity;
-            velocity.X = 0;
+            bool moved = false;
+
+            if (IsAttacking)
+            {
+                SoldierSpriteRow = 2;
+                AttackTimer -= deltaTime;
+                if (AttackTimer <= 0)
+                {
+                    IsAttacking = false;
+                }
+            }
+            else
+            {
+                SoldierSpriteRow = 0;
+            }
+
 
             if (Raylib.IsKeyDown(KeyboardKey.Right))
             {
-                IsFacingLeft = false;
-                SoldierSpriteRow = 1;
-                velocity.X = speed;
+                MoveRight(speed);
+                moved = true;
             }
             if (Raylib.IsKeyDown(KeyboardKey.Left))
             {
-                IsFacingLeft = true;
-                SoldierSpriteRow = 1;
-                velocity.X = -speed;
+                MoveLeft(speed);
+                moved = true;
+            }
+            if (Raylib.IsKeyPressed(KeyboardKey.Up) && !IsAttacking)
+            {
+                Attack();
+                Console.WriteLine("Attack!");
+
             }
 
-            Physics.Velocity = velocity;
+            if (!moved)
+            {
+                Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
+            }
+            if (Raylib.IsKeyPressed(KeyboardKey.Space) && Physics.IsOnGround)
+            {
+                Jump(400f);
+            }
             Physics.Update(deltaTime);
-            Animator.Update(deltaTime);
+            Animator.Update(deltaTime, SoldierSpriteRow);
         }
 
         public void Draw()

@@ -10,6 +10,7 @@ namespace Game.Models
         public float Size { get; set; }
         public float Gravity = 800f;
         public float Mass { get; set; }
+        public bool IsOnGround { get; set; }
 
 
         public void Update(float deltaTime)
@@ -17,6 +18,7 @@ namespace Game.Models
 
 
             Position += Velocity * deltaTime;
+            float groundY = 500;
 
 
             // Gravity check
@@ -25,10 +27,16 @@ namespace Game.Models
                 Velocity = new Vector2(Velocity.X, Velocity.Y + Gravity * deltaTime);
             }
 
-            if (Position.Y + Size / 2 > 500)
+            if (Position.Y + Size / 2 >= groundY)
             {
-                Position = new Vector2(Position.X, 500 - Size / 2);
+                Position = new Vector2(Position.X, groundY - Size / 2);
                 Velocity = new Vector2(Velocity.X, 0);
+                IsOnGround = true;
+
+            }
+            else
+            {
+                IsOnGround = false;
             }
 
             if (Position.X - Size / 2 < 0)
@@ -37,12 +45,11 @@ namespace Game.Models
                 Velocity = new Vector2(0, Velocity.Y);
             }
 
+
         }
 
 
     }
-
-
 
 
 }
