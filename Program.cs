@@ -27,7 +27,7 @@ public class Constants
             Texture2D map1 = Raylib.LoadTexture("Background/Map1/5.png");
             Texture2D soldier = Raylib.LoadTexture("Sprites/Characters/Soldier/Soldier/Soldier.png");
             Texture2D orc = Raylib.LoadTexture("Sprites/Characters/Orc/Orc/Orc.png");
-            Character hero = new Character("Nikita", 50, 50, new Animator(soldier), startPosition, Constants.CHARACTER_SIZE);
+            Character hero = new Character("Nikita", 10, 10, new Animator(soldier), startPosition, Constants.CHARACTER_SIZE);
             Enemy enemy = new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE);
 
 
@@ -39,8 +39,10 @@ public class Constants
 
             Raylib.InitAudioDevice();
             Music music = Raylib.LoadMusicStream("Music/Wav/Pixel 1.wav");
-            //Raylib.PlayMusicStream(music);
+            Raylib.PlayMusicStream(music);
             SoundManager.LoadSounds();
+
+            bool hasHitEnemy = false;
 
 
 
@@ -48,14 +50,30 @@ public class Constants
             {
                 float deltaTime = Raylib.GetFrameTime();
                 Raylib.UpdateMusicStream(music);
+
+                Raylib.BeginDrawing();
                 Raylib.DrawTexturePro(map1, mapSourceRect, mapDestRect, origin, 0, new Color(255, 255, 255, 255));
 
 
-
-                Raylib.BeginDrawing();
                 Raylib.ClearBackground(Color.White);
 
                 Raylib.DrawRectangle(0, 500, Constants.SCREEN_WIDTH, 50, new Color(0, 0, 0, 255));
+
+                if (hero.AttackHitBox.HasValue && Raylib.CheckCollisionRecs(hero.AttackHitBox.Value, enemy.GetHitbox()))
+                {
+                    if (!hasHitEnemy)
+                    {
+
+                        Console.WriteLine("Treffer!");
+                        enemy.Health -= hero.Strength;
+                        hasHitEnemy = true;
+                    }
+
+                }
+                else
+                {
+                    hasHitEnemy = false;
+                }
 
                 //Raylib.DrawText($"Name: {hero.Name}, Health: {hero.Health}, Strength: {hero.Strength}", 12, 12, 20, Color.Black);
                 hero.Update(deltaTime);

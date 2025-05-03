@@ -14,10 +14,10 @@ namespace Game.Models
         private int soldierIdleCount = 6;
         private float animationTimer = 0f;
         private float animationInterval = 0.1f;
-        //  Idle, Move, Attack
-        private int[] framesPerRow = new int[] { 6, 8, 6 };
-        //  Idle, Move, Attack
-        private float[] animationIntervals = new float[] { 0.1f, 0.1f, 0.1f };
+        //  Idle, Move, Attack, Dead
+        private int[] framesPerRow = new int[] { 6, 8, 6, 0, 0, 4 };
+        //  Idle, Move, Attack, Dead
+        private float[] animationIntervals = new float[] { 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f };
         private int lastSpriteRow = -1;
 
 
@@ -44,6 +44,11 @@ namespace Game.Models
             return framesPerRow[2] * animationIntervals[2];
         }
 
+        public int GetCurrentFrame()
+        {
+            return characterIndex;
+        }
+
 
         public void Update(float deltaTime, int spriteRow)
         {
@@ -57,7 +62,14 @@ namespace Game.Models
                 characterIndex++;
                 if (characterIndex >= framesPerRow[spriteRow])
                 {
-                    characterIndex = 0;
+                    if (spriteRow == 5)
+                    {
+                        characterIndex = framesPerRow[spriteRow] - 1;
+                    }
+                    else
+                    {
+                        characterIndex = 0;
+                    }
 
                 }
                 animationTimer = 0f;

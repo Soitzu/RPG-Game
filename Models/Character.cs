@@ -6,20 +6,28 @@ namespace Game.Models
     public class Character
     {
         public string Name { get; private set; }
-        public int Health { get; private set; }
+        public int Health { get; set; }
         public int Strength { get; private set; }
         public Animator Animator { get; private set; }
         public PhysicsBody Physics { get; private set; }
-        public int SoldierSpriteRow { get; private set; }
+        public int SoldierSpriteRow { get; set; }
         public int Rotation { get; private set; }
         public float CharacterSize { get; set; }
         public float Mass { get; set; }
+        public Status Status { get; private set; }
 
         public bool IsFacingLeft = false;
         public Vector2 Position { get; private set; }
         private bool IsAttacking = false;
         private float AttackTimer = 0f;
         private float AttackDuration = 0.5f;
+        public Rectangle? AttackHitBox { get; private set; }
+
+        public float AttackRange = 0;
+        public float AttackWidth = 30;
+        public float AttackHeight = 50;
+
+        protected bool IsDead = false;
 
 
 
@@ -32,6 +40,7 @@ namespace Game.Models
             Animator = animator;
             Physics = new PhysicsBody { Position = startPosition, Size = characterSize, Mass = mass };
             CharacterSize = characterSize;
+            Status = new Status(this);
         }
 
 
@@ -73,6 +82,8 @@ namespace Game.Models
 
 
 
+
+
         public void Update(float deltaTime)
         {
             float speed = 200f;
@@ -83,6 +94,16 @@ namespace Game.Models
             {
                 SoldierSpriteRow = 2;
                 AttackTimer -= deltaTime;
+                int currentFrame = Animator.GetCurrentFrame();
+                if (currentFrame == 3 || currentFrame == 4)
+                {
+
+                }
+                float xOffset = IsFacingLeft ? -AttackRange : CharacterSize;
+                Vector2 pos = Physics.Position;
+
+                AttackHitBox = new Rectangle(pos.X + xOffset, pos.Y, AttackWidth, AttackHeight);
+
                 if (AttackTimer <= 0)
                 {
                     IsAttacking = false;
@@ -91,25 +112,36 @@ namespace Game.Models
             else
             {
                 SoldierSpriteRow = 0;
+                AttackHitBox = null;
             }
 
+            if (AttackTimer <= 0)
+            {
+                IsAttacking = false;
+                AttackHitBox = null;
+            }
 
-            if (Raylib.IsKeyDown(KeyboardKey.Right))
+            if (!IsAttacking)
             {
-                MoveRight(speed);
-                moved = true;
-            }
-            if (Raylib.IsKeyDown(KeyboardKey.Left))
-            {
-                MoveLeft(speed);
-                moved = true;
-            }
-            if (Raylib.IsKeyPressed(KeyboardKey.Up) && !IsAttacking)
-            {
-                Attack();
-                Console.WriteLine("Attack!");
+                if (Raylib.IsKeyDown(KeyboardKey.Right))
+                {
+                    MoveRight(speed);
+                    moved = true;
+                }
+                if (Raylib.IsKeyDown(KeyboardKey.Left))
+                {
+                    MoveLeft(speed);
+                    moved = true;
+                }
+
+                if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                {
+                    Attack();
+                    Console.WriteLine("Attack!");
+                }
 
             }
+
 
             if (!moved)
             {
@@ -126,6 +158,7 @@ namespace Game.Models
         public void Draw()
         {
             Animator.Draw(Physics.Position, SoldierSpriteRow, IsFacingLeft);
+            Status.Draw();
         }
 
     }
