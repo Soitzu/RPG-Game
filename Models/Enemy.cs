@@ -1,11 +1,13 @@
 using Raylib_cs;
 using System.Numerics;
 
-
 namespace Game.Models
 {
     public class Enemy : Character
     {
+
+        public float TimeSinceDeath { get; private set; } = 0f;
+        public bool IsMarkedForRemoval { get; private set; } = false;
 
 
 
@@ -30,6 +32,13 @@ namespace Game.Models
                     OnDeath();
                     isDeadHandled = true;
                 }
+
+                TimeSinceDeath += deltaTime;
+                if (TimeSinceDeath > 3f)
+                {
+                    IsMarkedForRemoval = true;
+                }
+
                 Animator.Update(deltaTime, SoldierSpriteRow);
                 return;
             }
@@ -43,6 +52,7 @@ namespace Game.Models
             SoldierSpriteRow = 5;
             Animator.Reset();
             Console.WriteLine($"{Name} ist gestorben");
+
         }
 
     }

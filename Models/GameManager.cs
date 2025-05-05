@@ -15,17 +15,32 @@ namespace Game.Models
             this.enemies = enemies;
         }
 
+
+
+
         public void Update(float deltaTime)
         {
             CheckCollisions();
+            enemies.RemoveAll(enemy => enemy.IsMarkedForRemoval);
+
             hero.Update(deltaTime);
 
             foreach (var enemy in enemies)
             {
                 enemy.UpdateAI(deltaTime);
             }
+
+
         }
 
+        public void Draw()
+        {
+            hero.Draw();
+            foreach (var enemy in enemies)
+            {
+                enemy.Draw();
+            }
+        }
 
 
 
@@ -39,9 +54,8 @@ namespace Game.Models
                 {
                     if (!enemy.IsDead && !hero.alreadyHitEnemies.Contains(enemy))
                     {
-                        // do Damage
                         Console.WriteLine("Treffer!");
-                        // Optional: Kollisionshandling für Trefferzustand oder Animationen
+
                         hero.alreadyHitEnemies.Add(enemy);
                         hero.OnHitEnemy(enemy);
                     }

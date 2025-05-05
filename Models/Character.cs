@@ -23,7 +23,9 @@ namespace Game.Models
         private float AttackDuration = 0.5f;
         public Rectangle? AttackHitBox { get; private set; }
 
+        // Attack Stats
         public float AttackRange = 0;
+
         public float AttackWidth = 30;
         public float AttackHeight = 50;
         public bool hasHitEnemy = false;
@@ -39,9 +41,6 @@ namespace Game.Models
 
 
 
-
-
-
         public Character(string name, int health, int strength, Animator animator, Vector2 startPosition, float characterSize, float mass = 1.0f)
         {
             Name = name;
@@ -52,7 +51,6 @@ namespace Game.Models
             CharacterSize = characterSize;
             Status = new Status(this);
         }
-
 
 
         public void Attack()
@@ -90,6 +88,7 @@ namespace Game.Models
             SoldierSpriteRow = 1;
             Physics.Velocity = new Vector2(speed, Physics.Velocity.Y);
 
+
         }
 
         public void MoveLeft(float speed)
@@ -125,10 +124,6 @@ namespace Game.Models
         {
             return new Rectangle(Physics.Position.X, Physics.Position.Y, CharacterSize, CharacterSize);
         }
-
-
-
-
 
 
 
@@ -185,14 +180,28 @@ namespace Game.Models
                 {
                     MoveRight(speed);
                     moved = true;
+                    if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
+                    {
+                        speed += 100;
+                        moved = true;
+                        MoveRight(speed);
+                    }
                 }
+
                 if (Raylib.IsKeyDown(KeyboardKey.Left))
                 {
                     MoveLeft(speed);
                     moved = true;
+                    if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
+                    {
+                        speed += 100;
+                        moved = true;
+                        MoveLeft(speed);
+                    }
+
                 }
 
-                if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                if (Raylib.IsKeyPressed(KeyboardKey.Z))
                 {
                     Attack();
                     Console.WriteLine("Attack!");

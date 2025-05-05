@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Raylib-cs" Version="7.0.1" />
+    <PackageReference Include="System.Threading" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

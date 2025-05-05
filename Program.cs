@@ -31,7 +31,7 @@ public class Constants
             {
                new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE),
             };
-            Character hero = new Character("Nikita", 10, 10, new Animator(soldier), startPosition, Constants.CHARACTER_SIZE);
+            Character hero = new Player("Nikita", 10, 10, new Animator(soldier), startPosition, Constants.CHARACTER_SIZE);
             //Enemy enemy = new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE);
 
 
@@ -62,21 +62,13 @@ public class Constants
 
                 Raylib.ClearBackground(Color.White);
 
-                Raylib.DrawRectangle(0, 500, Constants.SCREEN_WIDTH, 50, new Color(0, 0, 0, 255));
 
 
 
                 //Raylib.DrawText($"Name: {hero.Name}, Health: {hero.Health}, Strength: {hero.Strength}", 12, 12, 20, Color.Black);
+
                 gameManager.Update(deltaTime);
-                hero.Draw();
-                foreach (var enemy in enemies)
-                {
-                    enemy.Draw();
-                }
-
-
-
-
+                gameManager.Draw();
                 Raylib.EndDrawing();
             }
 

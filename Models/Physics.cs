@@ -18,7 +18,7 @@ namespace Game.Models
 
 
             Position += Velocity * deltaTime;
-            float groundY = 500;
+            float groundY = 950;
 
 
             // Gravity check
