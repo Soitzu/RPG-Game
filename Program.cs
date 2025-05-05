@@ -27,8 +27,12 @@ public class Constants
             Texture2D map1 = Raylib.LoadTexture("Background/Map1/5.png");
             Texture2D soldier = Raylib.LoadTexture("Sprites/Characters/Soldier/Soldier/Soldier.png");
             Texture2D orc = Raylib.LoadTexture("Sprites/Characters/Orc/Orc/Orc.png");
+            List<Enemy> enemies = new List<Enemy>
+            {
+               new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE),
+            };
             Character hero = new Character("Nikita", 10, 10, new Animator(soldier), startPosition, Constants.CHARACTER_SIZE);
-            Enemy enemy = new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE);
+            //Enemy enemy = new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE);
 
 
             // Map1
@@ -42,7 +46,8 @@ public class Constants
             Raylib.PlayMusicStream(music);
             SoundManager.LoadSounds();
 
-            bool hasHitEnemy = false;
+            GameManager gameManager = new GameManager(hero, enemies);
+
 
 
 
@@ -59,27 +64,16 @@ public class Constants
 
                 Raylib.DrawRectangle(0, 500, Constants.SCREEN_WIDTH, 50, new Color(0, 0, 0, 255));
 
-                if (hero.AttackHitBox.HasValue && Raylib.CheckCollisionRecs(hero.AttackHitBox.Value, enemy.GetHitbox()))
-                {
-                    if (!hasHitEnemy)
-                    {
 
-                        Console.WriteLine("Treffer!");
-                        enemy.Health -= hero.Strength;
-                        hasHitEnemy = true;
-                    }
-
-                }
-                else
-                {
-                    hasHitEnemy = false;
-                }
 
                 //Raylib.DrawText($"Name: {hero.Name}, Health: {hero.Health}, Strength: {hero.Strength}", 12, 12, 20, Color.Black);
-                hero.Update(deltaTime);
+                gameManager.Update(deltaTime);
                 hero.Draw();
-                enemy.UpdateAI(deltaTime);
-                enemy.Draw();
+                foreach (var enemy in enemies)
+                {
+                    enemy.Draw();
+                }
+
 
 
 

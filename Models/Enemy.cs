@@ -22,25 +22,27 @@ namespace Game.Models
 
         public void UpdateAI(float deltaTime)
         {
-            if (Health <= 0 && !IsDead)
-            {
-                SoldierSpriteRow = 5;
-                IsDead = true;
 
+            if (IsDead)
+            {
+                if (!isDeadHandled)
+                {
+                    OnDeath();
+                    isDeadHandled = true;
+                }
+                Animator.Update(deltaTime, SoldierSpriteRow);
+                return;
             }
 
-            if (!IsDead)
-            {
-                Physics.Update(deltaTime);
-
-            }
-
+            Physics.Update(deltaTime);
             Animator.Update(deltaTime, SoldierSpriteRow);
         }
 
-        public Rectangle GetHitbox()
+        protected override void OnDeath()
         {
-            return new Rectangle(Physics.Position.X, Physics.Position.Y, CharacterSize, CharacterSize);
+            SoldierSpriteRow = 5;
+            Animator.Reset();
+            Console.WriteLine($"{Name} ist gestorben");
         }
 
     }

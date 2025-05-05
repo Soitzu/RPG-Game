@@ -26,8 +26,18 @@ namespace Game.Models
         public float AttackRange = 0;
         public float AttackWidth = 30;
         public float AttackHeight = 50;
+        public bool hasHitEnemy = false;
+        public HashSet<Enemy> alreadyHitEnemies = new HashSet<Enemy>();
 
-        protected bool IsDead = false;
+
+        // returns true, if Health <= 0
+        public bool IsDead => Health <= 0;
+        protected bool isDeadHandled = false;
+
+        public bool IsInvincible = false;
+
+
+
 
 
 
@@ -52,7 +62,17 @@ namespace Game.Models
             SoldierSpriteRow = 2;
             Animator.Reset();
             SoundManager.PlaySound("attack_swing");
+            alreadyHitEnemies.Clear(); // <--- NEU!
         }
+
+        public void OnHitEnemy(Enemy enemy)
+        {
+            if (enemy.IsDead) return;
+            Console.WriteLine($"{Name} hat {enemy.Name} getroffen!");
+            enemy.TakeDamage(Strength);
+        }
+
+
 
         public void Jump(float jumpStrength)
         {
@@ -80,6 +100,36 @@ namespace Game.Models
         }
 
 
+        public virtual void TakeDamage(int amount)
+        {
+
+            if (IsDead) return;
+
+            Health -= amount;
+
+            if (IsDead && !isDeadHandled)
+            {
+                isDeadHandled = true;
+                OnDeath();
+            }
+        }
+
+        protected virtual void OnDeath()
+        {
+            SoldierSpriteRow = 5;
+            Animator.SetAnimation(SoldierSpriteRow);
+        }
+
+
+        public Rectangle GetHitbox()
+        {
+            return new Rectangle(Physics.Position.X, Physics.Position.Y, CharacterSize, CharacterSize);
+        }
+
+
+
+
+
 
 
 
@@ -87,8 +137,16 @@ namespace Game.Models
         public void Update(float deltaTime)
         {
             float speed = 200f;
-            SoldierSpriteRow = 0;
             bool moved = false;
+
+            if (IsDead)
+            {
+                Animator.Update(deltaTime, SoldierSpriteRow);
+                return;
+            }
+
+            SoldierSpriteRow = 0;
+
 
             if (IsAttacking)
             {
