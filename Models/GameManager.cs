@@ -5,11 +5,11 @@ namespace Game.Models
 {
     public class GameManager
     {
-        private Character hero;
+        private Player hero;
         private List<Enemy> enemies;
 
 
-        public GameManager(Character hero, List<Enemy> enemies)
+        public GameManager(Player hero, List<Enemy> enemies)
         {
             this.hero = hero;
             this.enemies = enemies;
@@ -52,7 +52,10 @@ namespace Game.Models
             {
                 if (hero.AttackHitBox.HasValue && Raylib.CheckCollisionRecs(hero.AttackHitBox.Value, enemy.GetHitbox()))
                 {
-                    if (!enemy.IsDead && !hero.alreadyHitEnemies.Contains(enemy))
+
+                    int currentFrame = hero.Animator.GetCurrentFrame();
+
+                    if ((currentFrame == 3 || currentFrame == 4) && !enemy.IsDead && !hero.alreadyHitEnemies.Contains(enemy))
                     {
                         Console.WriteLine("Treffer!");
 

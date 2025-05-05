@@ -24,14 +24,17 @@ public class Constants
 
             Vector2 startPosition = new Vector2(100 + 50, 100 + 50);
             Raylib.InitWindow(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT, "Mini Adventurer");
+
+
             Texture2D map1 = Raylib.LoadTexture("Background/Map1/5.png");
             Texture2D soldier = Raylib.LoadTexture("Sprites/Characters/Soldier/Soldier/Soldier.png");
             Texture2D orc = Raylib.LoadTexture("Sprites/Characters/Orc/Orc/Orc.png");
+
             List<Enemy> enemies = new List<Enemy>
             {
                new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE),
             };
-            Character hero = new Player("Nikita", 10, 10, new Animator(soldier), startPosition, Constants.CHARACTER_SIZE);
+            Player hero = new Player("Nikita", 10, 10, new Animator(soldier), startPosition, Constants.CHARACTER_SIZE);
             //Enemy enemy = new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE);
 
 

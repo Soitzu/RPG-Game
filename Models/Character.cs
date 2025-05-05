@@ -17,17 +17,19 @@ namespace Game.Models
         public Status Status { get; private set; }
 
         public bool IsFacingLeft = false;
-        public Vector2 Position { get; private set; }
-        private bool IsAttacking = false;
-        private float AttackTimer = 0f;
-        private float AttackDuration = 0.5f;
-        public Rectangle? AttackHitBox { get; private set; }
+        public Vector2 Position { get; protected set; }
+        protected bool IsAttacking = false;
+        protected float AttackTimer = 0f;
+        protected float AttackDuration = 0.5f;
+        public Rectangle? AttackHitBox { get; protected set; }
 
         // Attack Stats
         public float AttackRange = 0;
 
         public float AttackWidth = 30;
         public float AttackHeight = 50;
+        protected readonly int[] attackHitFrames = { 3, 4 };
+        protected bool hasHitInCurrentAttack = false;
         public bool hasHitEnemy = false;
         public HashSet<Enemy> alreadyHitEnemies = new HashSet<Enemy>();
 
@@ -60,7 +62,7 @@ namespace Game.Models
             SoldierSpriteRow = 2;
             Animator.Reset();
             SoundManager.PlaySound("attack_swing");
-            alreadyHitEnemies.Clear(); // <--- NEU!
+            alreadyHitEnemies.Clear();
         }
 
         public void OnHitEnemy(Enemy enemy)
