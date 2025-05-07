@@ -32,9 +32,9 @@ public class Constants
 
             List<Enemy> enemies = new List<Enemy>
             {
-               new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE),
+               new Enemy("Orc", 10, 10, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE),
             };
-            Player hero = new Player("Nikita", 10, 10, new Animator(soldier), startPosition, Constants.CHARACTER_SIZE);
+            Player hero = new Player("Nikita", 50, 5, new Animator(soldier), startPosition, Constants.CHARACTER_SIZE);
             //Enemy enemy = new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE);
 
 

@@ -6,10 +6,18 @@ namespace Game.Models
     public class Enemy : Character
     {
 
-        public float TimeSinceDeath { get; private set; } = 0f;
-        public bool IsMarkedForRemoval { get; private set; } = false;
 
 
+        // AI-Parameter
+        public float AggroRange = 500f;      // Aggro distance
+        public float MoveSpeed = 120f;       // Movement Speed
+        public float AttackCooldown = 1.5f;  // Time between Attacks
+        private float attackCooldownTimer = 1f;
+
+        // Target (Player)
+        public Player Target { get; set; }
+
+        public bool HasHitPlayerThisAttack = false;
 
 
 
@@ -17,6 +25,7 @@ namespace Game.Models
 
         public Enemy(string name, int health, int strength, Animator animator, Vector2 startPosition, float characterSize, float mass = 1.0f) : base(name, health, strength, animator, startPosition, characterSize, mass)
         {
+            AttackRange = 100f;
 
         }
 
@@ -39,10 +48,55 @@ namespace Game.Models
                     IsMarkedForRemoval = true;
                 }
 
+                UpdateAttack(deltaTime);
                 Animator.Update(deltaTime, SoldierSpriteRow);
                 return;
             }
 
+            // --- KI-Logik ---
+            if (Target != null && !Target.IsDead)
+            {
+                Vector2 myPos = Physics.Position;
+                Vector2 targetPos = Target.Physics.Position;
+                float distance = Vector2.Distance(myPos, targetPos);
+
+                // Richtung zum Spieler
+                float dx = targetPos.X - myPos.X;
+                IsFacingLeft = dx < 0;
+
+                // Angriff nur, wenn Cooldown abgelaufen
+                attackCooldownTimer -= deltaTime;
+
+                // <<< NEU: Angriff NUR starten, wenn NICHT IsAttacking!
+                if (distance <= AttackRange)
+                {
+                    if (!IsAttacking && attackCooldownTimer <= 0f)
+                    {
+                        Attack();
+                        attackCooldownTimer = AttackCooldown;
+                    }
+                }
+                else if (distance <= AggroRange)
+                {
+                    float moveDir = MathF.Sign(dx);
+                    Physics.Velocity = new Vector2(moveDir * MoveSpeed, Physics.Velocity.Y);
+                    SoldierSpriteRow = 1; // Laufanimation
+                }
+                else
+                {
+                    Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
+                    SoldierSpriteRow = 0;
+                }
+            }
+            else
+            {
+                Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
+                SoldierSpriteRow = 0;
+            }
+
+            // --- KI-End ---
+
+            UpdateAttack(deltaTime);
             Physics.Update(deltaTime);
             Animator.Update(deltaTime, SoldierSpriteRow);
         }
@@ -54,6 +108,40 @@ namespace Game.Models
             Console.WriteLine($"{Name} ist gestorben");
 
         }
+
+        public void UpdateAttack(float deltaTime)
+        {
+            if (IsAttacking)
+            {
+                SoldierSpriteRow = 2;
+                AttackTimer -= deltaTime;
+                int currentFrame = Animator.GetCurrentFrame();
+
+                // Hitbox nur in Trefferframes setzen
+                if (currentFrame == 3 || currentFrame == 4)
+                {
+                    float xOffset = IsFacingLeft ? -AttackRange : CharacterSize;
+                    Vector2 pos = Physics.Position;
+                    AttackHitBox = new Rectangle(pos.X + xOffset, pos.Y, AttackWidth, AttackHeight);
+                }
+                else
+                {
+                    AttackHitBox = null;
+                }
+
+                if (AttackTimer <= 0)
+                {
+                    IsAttacking = false;
+                    AttackHitBox = null;
+                }
+            }
+            else
+            {
+                AttackHitBox = null;
+                HasHitPlayerThisAttack = false;
+            }
+        }
+
 
     }
 }

@@ -12,6 +12,7 @@ namespace Game.Models
         public Player(string name, int health, int strength, Animator animator, Vector2 startPosition, float characterSize, float mass = 1.0f) : base(name, health, strength, animator, startPosition, characterSize, mass)
         {
 
+
         }
 
 
@@ -22,11 +23,23 @@ namespace Game.Models
             float speed = 200f;
             bool moved = false;
 
+
             if (IsDead)
             {
-                Animator.Update(deltaTime, SoldierSpriteRow);
+                if (!isDeadHandled)
+                {
+                    OnDeath();
+                    isDeadHandled = true;
+                }
+
+                TimeSinceDeath += deltaTime;
+                if (TimeSinceDeath > 3f)
+                {
+                    IsMarkedForRemoval = true;
+                }
                 return;
             }
+
 
             SoldierSpriteRow = 0;
 
@@ -115,6 +128,15 @@ namespace Game.Models
             Status.Draw();
             Status.DrawCharacterWindow();
         }
+
+        protected override void OnDeath()
+        {
+            SoldierSpriteRow = 5;
+            Animator.Reset();
+            Console.WriteLine($"{Name} ist gestorben");
+
+        }
+
 
 
 

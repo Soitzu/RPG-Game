@@ -1,5 +1,4 @@
 using Raylib_cs;
-using System.Numerics;
 
 namespace Game.Models
 {
@@ -13,6 +12,10 @@ namespace Game.Models
         {
             this.hero = hero;
             this.enemies = enemies;
+            foreach (var enemy in enemies)
+            {
+                enemy.Target = hero;
+            }
         }
 
 
@@ -21,6 +24,7 @@ namespace Game.Models
         public void Update(float deltaTime)
         {
             CheckCollisions();
+            CheckEnemyAttacks();
             enemies.RemoveAll(enemy => enemy.IsMarkedForRemoval);
 
             hero.Update(deltaTime);
@@ -72,16 +76,16 @@ namespace Game.Models
             {
                 if (enemy.AttackHitBox.HasValue && Raylib.CheckCollisionRecs(enemy.AttackHitBox.Value, hero.GetHitbox()))
                 {
-                    if (!hero.IsInvincible)
+                    int currentFrame = enemy.Animator.GetCurrentFrame();
+                    if ((currentFrame == 3 || currentFrame == 4) && !hero.IsInvincible && !enemy.HasHitPlayerThisAttack)
                     {
                         hero.TakeDamage(enemy.Strength);
+                        enemy.HasHitPlayerThisAttack = true;
+                        // Optional: hero.IsInvincible = true; // für kurze Unverwundbarkeit
                     }
-
                 }
             }
         }
-
-
     }
 }
 

@@ -40,6 +40,9 @@ namespace Game.Models
 
         public bool IsInvincible = false;
 
+        public float TimeSinceDeath { get; protected set; } = 0f;
+        public bool IsMarkedForRemoval { get; protected set; } = false;
+
 
 
 
