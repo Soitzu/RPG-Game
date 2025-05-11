@@ -3,6 +3,8 @@ using System.Numerics;
 
 namespace Game.Models
 {
+
+
     public class Character
     {
         public string Name { get; private set; }
@@ -10,7 +12,7 @@ namespace Game.Models
         public int Strength { get; private set; }
         public Animator Animator { get; private set; }
         public PhysicsBody Physics { get; private set; }
-        public int SoldierSpriteRow { get; set; }
+        public int SpriteRow { get; set; }
         public int Rotation { get; private set; }
         public float CharacterSize { get; set; }
         public float Mass { get; set; }
@@ -43,6 +45,10 @@ namespace Game.Models
         public float TimeSinceDeath { get; protected set; } = 0f;
         public bool IsMarkedForRemoval { get; protected set; } = false;
 
+        private AnimationType currentAnimationType = AnimationType.Idle;
+
+
+
 
 
 
@@ -55,17 +61,22 @@ namespace Game.Models
             Physics = new PhysicsBody { Position = startPosition, Size = characterSize, Mass = mass };
             CharacterSize = characterSize;
             Status = new Status(this);
+
+            currentAnimationType = AnimationType.Idle;
+            Animator.SetAnimation(currentAnimationType);
+
         }
 
 
-        public void Attack()
+        public virtual void Attack()
         {
             IsAttacking = true;
             AttackTimer = Animator.GetAttackDuration();
-            SoldierSpriteRow = 2;
+            currentAnimationType = AnimationType.Attack;
             Animator.Reset();
             SoundManager.PlaySound("attack_swing");
             alreadyHitEnemies.Clear();
+            Animator.SetAnimation(currentAnimationType);
         }
 
         public void OnHitEnemy(Enemy enemy)
@@ -90,7 +101,7 @@ namespace Game.Models
         {
 
             IsFacingLeft = false;
-            SoldierSpriteRow = 1;
+            SpriteRow = 1;
             Physics.Velocity = new Vector2(speed, Physics.Velocity.Y);
 
 
@@ -99,7 +110,7 @@ namespace Game.Models
         public void MoveLeft(float speed)
         {
             IsFacingLeft = true;
-            SoldierSpriteRow = 1;
+            SpriteRow = 1;
             Physics.Velocity = new Vector2(-speed, Physics.Velocity.Y);
         }
 
@@ -120,8 +131,9 @@ namespace Game.Models
 
         protected virtual void OnDeath()
         {
-            SoldierSpriteRow = 5;
-            Animator.SetAnimation(SoldierSpriteRow);
+            SpriteRow = 5;
+            Animator.SetAnimation(AnimationType.Death);
+            Animator.Reset();
         }
 
 
@@ -141,22 +153,18 @@ namespace Game.Models
 
             if (IsDead)
             {
-                Animator.Update(deltaTime, SoldierSpriteRow);
+                Animator.SetAnimation(AnimationType.Death);
+                Animator.Update(deltaTime);
                 return;
             }
-
-            SoldierSpriteRow = 0;
 
 
             if (IsAttacking)
             {
-                SoldierSpriteRow = 2;
+                currentAnimationType = AnimationType.Attack;
                 AttackTimer -= deltaTime;
                 int currentFrame = Animator.GetCurrentFrame();
-                if (currentFrame == 3 || currentFrame == 4)
-                {
 
-                }
                 float xOffset = IsFacingLeft ? -AttackRange : CharacterSize;
                 Vector2 pos = Physics.Position;
 
@@ -169,7 +177,7 @@ namespace Game.Models
             }
             else
             {
-                SoldierSpriteRow = 0;
+                currentAnimationType = AnimationType.Idle;
                 AttackHitBox = null;
             }
 
@@ -185,6 +193,7 @@ namespace Game.Models
                 {
                     MoveRight(speed);
                     moved = true;
+                    currentAnimationType = AnimationType.Move;
                     if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
                     {
                         speed += 100;
@@ -197,6 +206,7 @@ namespace Game.Models
                 {
                     MoveLeft(speed);
                     moved = true;
+                    currentAnimationType = AnimationType.Move;
                     if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
                     {
                         speed += 100;
@@ -209,6 +219,7 @@ namespace Game.Models
                 if (Raylib.IsKeyPressed(KeyboardKey.Z))
                 {
                     Attack();
+                    currentAnimationType = AnimationType.Attack;
                     Console.WriteLine("Attack!");
                 }
 
@@ -223,13 +234,14 @@ namespace Game.Models
             {
                 Jump(400f);
             }
+            Animator.SetAnimation(currentAnimationType);
             Physics.Update(deltaTime);
-            Animator.Update(deltaTime, SoldierSpriteRow);
+            Animator.Update(deltaTime);
         }
 
         public void Draw()
         {
-            Animator.Draw(Physics.Position, SoldierSpriteRow, IsFacingLeft);
+            Animator.Draw(Physics.Position, IsFacingLeft);
             Status.Draw();
         }
 

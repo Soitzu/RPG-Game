@@ -6,6 +6,7 @@ namespace Game.Models
     public class Enemy : Character
     {
 
+        private AnimationType currentAnimationType = AnimationType.Idle;
 
 
         // AI-Parameter
@@ -27,6 +28,13 @@ namespace Game.Models
         {
             AttackRange = 100f;
 
+
+        }
+
+        public override void Attack()
+        {
+            base.Attack();
+            HasHitPlayerThisAttack = false;
         }
 
 
@@ -40,6 +48,8 @@ namespace Game.Models
                 {
                     OnDeath();
                     isDeadHandled = true;
+                    IsAttacking = false;
+                    AttackHitBox = null;
                 }
 
                 TimeSinceDeath += deltaTime;
@@ -48,8 +58,8 @@ namespace Game.Models
                     IsMarkedForRemoval = true;
                 }
 
-                UpdateAttack(deltaTime);
-                Animator.Update(deltaTime, SoldierSpriteRow);
+                Animator.SetAnimation(AnimationType.Death);
+                Animator.Update(deltaTime);
                 return;
             }
 
@@ -80,30 +90,31 @@ namespace Game.Models
                 {
                     float moveDir = MathF.Sign(dx);
                     Physics.Velocity = new Vector2(moveDir * MoveSpeed, Physics.Velocity.Y);
-                    SoldierSpriteRow = 1; // Laufanimation
+                    currentAnimationType = AnimationType.Move;
                 }
                 else
                 {
                     Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
-                    SoldierSpriteRow = 0;
+                    currentAnimationType = AnimationType.Idle;
                 }
             }
             else
             {
                 Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
-                SoldierSpriteRow = 0;
+                currentAnimationType = AnimationType.Idle;
             }
 
             // --- KI-End ---
 
+            Animator.SetAnimation(currentAnimationType);
             UpdateAttack(deltaTime);
             Physics.Update(deltaTime);
-            Animator.Update(deltaTime, SoldierSpriteRow);
+            Animator.Update(deltaTime);
         }
 
         protected override void OnDeath()
         {
-            SoldierSpriteRow = 5;
+            currentAnimationType = AnimationType.Death;
             Animator.Reset();
             Console.WriteLine($"{Name} ist gestorben");
 
@@ -113,7 +124,7 @@ namespace Game.Models
         {
             if (IsAttacking)
             {
-                SoldierSpriteRow = 2;
+                currentAnimationType = AnimationType.Attack;
                 AttackTimer -= deltaTime;
                 int currentFrame = Animator.GetCurrentFrame();
 

@@ -6,12 +6,16 @@ namespace Game.Models
     public class Player : Character
     {
 
+        private AnimationType currentAnimationType = AnimationType.Idle;
+
+
+        private AnimationType lastAnimationType = AnimationType.Idle;
+
 
 
 
         public Player(string name, int health, int strength, Animator animator, Vector2 startPosition, float characterSize, float mass = 1.0f) : base(name, health, strength, animator, startPosition, characterSize, mass)
         {
-
 
         }
 
@@ -22,6 +26,8 @@ namespace Game.Models
         {
             float speed = 200f;
             bool moved = false;
+            currentAnimationType = AnimationType.Idle;
+
 
 
             if (IsDead)
@@ -30,6 +36,8 @@ namespace Game.Models
                 {
                     OnDeath();
                     isDeadHandled = true;
+                    IsAttacking = false;
+                    AttackHitBox = null;
                 }
 
                 TimeSinceDeath += deltaTime;
@@ -37,16 +45,18 @@ namespace Game.Models
                 {
                     IsMarkedForRemoval = true;
                 }
+
+                Animator.SetAnimation(AnimationType.Death);
+                Animator.Update(deltaTime);
                 return;
             }
 
 
-            SoldierSpriteRow = 0;
 
 
             if (IsAttacking)
             {
-                SoldierSpriteRow = 2;
+                currentAnimationType = AnimationType.Attack;
                 AttackTimer -= deltaTime;
                 int currentFrame = Animator.GetCurrentFrame();
 
@@ -62,7 +72,7 @@ namespace Game.Models
             }
             else
             {
-                SoldierSpriteRow = 0;
+                SpriteRow = 0;
                 AttackHitBox = null;
             }
 
@@ -78,6 +88,8 @@ namespace Game.Models
                 {
                     MoveRight(speed);
                     moved = true;
+                    currentAnimationType = AnimationType.Move;
+
                     if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
                     {
                         speed += 100;
@@ -90,6 +102,8 @@ namespace Game.Models
                 {
                     MoveLeft(speed);
                     moved = true;
+                    currentAnimationType = AnimationType.Move;
+
                     if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
                     {
                         speed += 100;
@@ -116,24 +130,32 @@ namespace Game.Models
             {
                 Jump(400f);
             }
+            if (currentAnimationType != lastAnimationType)
+            {
+                Animator.SetAnimation(currentAnimationType);
+                lastAnimationType = currentAnimationType;
+            }
+
+
             Physics.Update(deltaTime);
-            Animator.Update(deltaTime, SoldierSpriteRow);
+            Animator.Update(deltaTime);
         }
 
 
 
         public new void Draw()
         {
-            Animator.Draw(Physics.Position, SoldierSpriteRow, IsFacingLeft);
+            Animator.Draw(Physics.Position, IsFacingLeft);
             Status.Draw();
             Status.DrawCharacterWindow();
         }
 
         protected override void OnDeath()
         {
-            SoldierSpriteRow = 5;
+            Animator.SetAnimation(AnimationType.Death);
             Animator.Reset();
             Console.WriteLine($"{Name} ist gestorben");
+            Console.WriteLine($"{SpriteRow}");
 
         }
 

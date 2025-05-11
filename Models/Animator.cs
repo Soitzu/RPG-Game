@@ -11,19 +11,27 @@ namespace Game.Models
 
         public float characterSize = 100f;
         private int characterIndex = 0;
-        private int soldierIdleCount = 6;
         private float animationTimer = 0f;
         private float animationInterval = 0.1f;
-        //  Idle, Move, Attack, Dead
-        private int[] framesPerRow = new int[] { 6, 8, 6, 0, 0, 4 };
-        //  Idle, Move, Attack, Dead
-        private float[] animationIntervals = new float[] { 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f };
         private int lastSpriteRow = -1;
 
 
-        public Animator(Texture2D sprite)
+        private AnimationType currentType;
+        private AnimationInfo currentAnimation;
+
+        private Dictionary<AnimationType, AnimationInfo> animations;
+
+
+
+        public Animator(Texture2D sprite, Dictionary<AnimationType, AnimationInfo> animationMap)
         {
             Sprite = sprite;
+            animations = animationMap;
+            SetAnimation(AnimationType.Idle);
+            characterIndex = 0;
+            animationTimer = 0f;
+
+
         }
 
 
@@ -33,15 +41,26 @@ namespace Game.Models
             animationTimer = 0f;
         }
 
-        public void SetAnimation(int row)
+        public void SetAnimation(AnimationType type)
         {
-            soldierIdleCount = framesPerRow[row];
-            Reset();
+            Console.WriteLine($"SetAnimation: {type}");
+            if (currentType != type)
+            {
+                if (!animations.TryGetValue(type, out var animInfo))
+                {
+                    Console.WriteLine($"WARNUNG: AnimationType {type} Nicht im Mapping! Fallback auf Idle");
+                    animInfo = animations[AnimationType.Idle];
+                    type = AnimationType.Idle;
+                }
+                currentType = type;
+                currentAnimation = animInfo;
+                Reset();
+            }
         }
 
         public float GetAttackDuration()
         {
-            return framesPerRow[2] * animationIntervals[2];
+            return animations[AnimationType.Attack].FrameCount * animations[AnimationType.Attack].Interval;
         }
 
         public int GetCurrentFrame()
@@ -50,56 +69,56 @@ namespace Game.Models
         }
 
 
-        public void Update(float deltaTime, int spriteRow)
+        public void Update(float deltaTime)
         {
-
-            float interval = animationIntervals[spriteRow];
+            if (currentAnimation == null)
+            {
+                Console.WriteLine("FEHLER: currentAnimation ist null! Wurde SetAnimation() korrekt aufgerufen?");
+                return;
+            }
 
             animationTimer += deltaTime;
 
-            if (animationTimer >= interval)
+            if (animationTimer >= currentAnimation.Interval)
             {
                 characterIndex++;
-                if (characterIndex >= framesPerRow[spriteRow])
+                if (characterIndex >= currentAnimation.FrameCount)
                 {
-                    if (spriteRow == 5)
+                    if (currentType == AnimationType.Death)
                     {
-                        characterIndex = framesPerRow[spriteRow] - 1;
+                        characterIndex = currentAnimation.FrameCount - 1;
                     }
                     else
                     {
                         characterIndex = 0;
                     }
-
                 }
                 animationTimer = 0f;
             }
-
-
         }
 
-        public void Draw(Vector2 position, int spriteRow, bool isFacingLeft)
+
+
+
+
+
+        public void Draw(Vector2 position, bool isFacingLeft)
         {
+            if (currentAnimation == null)
+            {
+                Console.WriteLine("FEHLER: currentAnimation ist null! Draw() abgebrochen.");
+                return;
+            }
+            Console.WriteLine($"Draw: Row={currentAnimation.SpriteRow}, Index={characterIndex}, Size={characterSize}");
+
+            Console.WriteLine($"Draw: SpriteRow={currentAnimation.SpriteRow}, Frame={characterIndex}");
+
             float width = characterSize * 5;
             float height = characterSize * 5;
+            float direction = isFacingLeft ? -1 : 1;
 
-            float direction = 1;
 
-            if (spriteRow != lastSpriteRow)
-            {
-                SetAnimation(spriteRow);
-                lastSpriteRow = spriteRow;
-            }
-
-            if (isFacingLeft == true)
-            {
-                direction = -1;
-            }
-            else
-            {
-                direction = 1;
-            }
-            Rectangle source = new Rectangle(characterIndex * characterSize, spriteRow * characterSize, direction * characterSize, characterSize);
+            Rectangle source = new Rectangle(characterIndex * characterSize, currentAnimation.SpriteRow * characterSize, direction * characterSize, characterSize);
             Rectangle dest = new Rectangle(position.X, position.Y, width, height);
             Vector2 origin = new Vector2(width / 2, height / 2);
 

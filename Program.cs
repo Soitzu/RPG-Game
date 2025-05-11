@@ -24,17 +24,35 @@ public class Constants
 
             Vector2 startPosition = new Vector2(100 + 50, 100 + 50);
             Raylib.InitWindow(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT, "Mini Adventurer");
+            var orcAnimations = new Dictionary<AnimationType, AnimationInfo>
+            {
+              { AnimationType.Idle,   new AnimationInfo(0, 6, 0.12f) },
+              { AnimationType.Move,   new AnimationInfo(1, 8, 0.1f) },
+              { AnimationType.Attack, new AnimationInfo(2, 6, 0.09f) },
+              { AnimationType.Death,  new AnimationInfo(5, 4, 0.13f) }
+            };
+
+            var soldierAnimations = new Dictionary<AnimationType, AnimationInfo>
+            {
+              { AnimationType.Idle,   new AnimationInfo(0, 6, 0.12f) },
+              { AnimationType.Move,   new AnimationInfo(1, 8, 0.1f) },
+              { AnimationType.Attack, new AnimationInfo(2, 6, 0.1f) },
+              { AnimationType.Death,  new AnimationInfo(6, 4, 0.1f) }
+            };
 
 
             Texture2D map1 = Raylib.LoadTexture("Background/Map1/5.png");
             Texture2D soldier = Raylib.LoadTexture("Sprites/Characters/Soldier/Soldier/Soldier.png");
             Texture2D orc = Raylib.LoadTexture("Sprites/Characters/Orc/Orc/Orc.png");
 
+
+
+
             List<Enemy> enemies = new List<Enemy>
             {
-               new Enemy("Orc", 10, 10, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE),
+               new Enemy("Orc", 10, 10, new Animator(orc, orcAnimations), new Vector2(500, 500), Constants.CHARACTER_SIZE),
             };
-            Player hero = new Player("Nikita", 50, 5, new Animator(soldier), startPosition, Constants.CHARACTER_SIZE);
+            Player hero = new Player("Nikita", 50, 5, new Animator(soldier, soldierAnimations), startPosition, Constants.CHARACTER_SIZE);
             //Enemy enemy = new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE);
 
 
@@ -51,6 +69,14 @@ public class Constants
 
             GameManager gameManager = new GameManager(hero, enemies);
 
+            Console.WriteLine("SoldierAnimations:");
+            foreach (var kv in soldierAnimations)
+                Console.WriteLine($"{kv.Key}: Row={kv.Value.SpriteRow}, Frames={kv.Value.FrameCount}, Interval={kv.Value.Interval}");
+
+            Console.WriteLine("OrcAnimations:");
+            foreach (var kv in orcAnimations)
+                Console.WriteLine($"{kv.Key}: Row={kv.Value.SpriteRow}, Frames={kv.Value.FrameCount}, Interval={kv.Value.Interval}");
+
 
 
 
@@ -59,18 +85,15 @@ public class Constants
                 float deltaTime = Raylib.GetFrameTime();
                 Raylib.UpdateMusicStream(music);
 
+                gameManager.Update(deltaTime);
+
                 Raylib.BeginDrawing();
+                Raylib.ClearBackground(Color.White);
+
                 Raylib.DrawTexturePro(map1, mapSourceRect, mapDestRect, origin, 0, new Color(255, 255, 255, 255));
 
 
-                Raylib.ClearBackground(Color.White);
 
-
-
-
-                //Raylib.DrawText($"Name: {hero.Name}, Health: {hero.Health}, Strength: {hero.Strength}", 12, 12, 20, Color.Black);
-
-                gameManager.Update(deltaTime);
                 gameManager.Draw();
                 Raylib.EndDrawing();
             }
