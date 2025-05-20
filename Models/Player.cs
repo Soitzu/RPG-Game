@@ -11,11 +11,17 @@ namespace Game.Models
 
         private AnimationType lastAnimationType = AnimationType.Idle;
 
+        private bool isInventoryOpen = false;
+
+        public Inventory Inventory { get; private set; }
+
+
 
 
 
         public Player(string name, int health, int strength, Animator animator, Vector2 startPosition, float characterSize, float mass = 1.0f) : base(name, health, strength, animator, startPosition, characterSize, mass)
         {
+            Inventory = new Inventory();
 
         }
 
@@ -152,10 +158,9 @@ namespace Game.Models
 
         protected override void OnDeath()
         {
-            Animator.SetAnimation(AnimationType.Death);
+            currentAnimationType = AnimationType.Death;
             Animator.Reset();
             Console.WriteLine($"{Name} ist gestorben");
-            Console.WriteLine($"{SpriteRow}");
 
         }
 

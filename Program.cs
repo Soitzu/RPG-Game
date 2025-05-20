@@ -78,6 +78,9 @@ public class Constants
                 Console.WriteLine($"{kv.Key}: Row={kv.Value.SpriteRow}, Frames={kv.Value.FrameCount}, Interval={kv.Value.Interval}");
 
 
+            float scrollingBack = 0.0f;
+
+
 
 
             while (!Raylib.WindowShouldClose())
@@ -87,14 +90,23 @@ public class Constants
 
                 gameManager.Update(deltaTime);
 
+                scrollingBack -= 0.1f;
+                if (scrollingBack <= -Constants.SCREEN_WIDTH * 2) scrollingBack = 0;
+
+
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(Color.White);
 
-                Raylib.DrawTexturePro(map1, mapSourceRect, mapDestRect, origin, 0, new Color(255, 255, 255, 255));
-
+                //Raylib.DrawTexturePro(map1, mapSourceRect, mapDestRect, origin, 0, new Color(255, 255, 255, 255));
+                Raylib.DrawTextureEx(map1, new Vector2(scrollingBack, 20), 0.0f, 2.0f, new Color(255, 255, 255, 255));
+                Raylib.DrawTextureEx(map1, new Vector2(Constants.SCREEN_WIDTH * 2 + scrollingBack, 20), 0.0f, 2.0f, new Color(255, 255, 255, 255));
 
 
                 gameManager.Draw();
+
+
+
+
                 Raylib.EndDrawing();
             }
 
