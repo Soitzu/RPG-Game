@@ -40,7 +40,6 @@ namespace Game.Models
             {
                 if (!isDeadHandled)
                 {
-                    OnDeath();
                     isDeadHandled = true;
                     IsAttacking = false;
                     AttackHitBox = null;

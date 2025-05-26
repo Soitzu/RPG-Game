@@ -131,15 +131,34 @@ namespace Game.Models
 
         protected virtual void OnDeath()
         {
-            SpriteRow = 5;
             Animator.SetAnimation(AnimationType.Death);
-            Animator.Reset();
+        }
+
+        protected virtual void IsDead2()
+        {
+
+
         }
 
 
         public Rectangle GetHitbox()
         {
             return new Rectangle(Physics.Position.X, Physics.Position.Y, CharacterSize, CharacterSize);
+        }
+
+        public void HandleDeath(bool isDeadHandled, float deltaTime)
+        {
+            if (!isDeadHandled)
+            {
+                isDeadHandled = true;
+                IsAttacking = false;
+                AttackHitBox = null;
+            }
+
+            Animator.SetAnimation(AnimationType.Death);
+            Animator.Update(deltaTime);
+            return;
+
         }
 
 

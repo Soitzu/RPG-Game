@@ -43,7 +43,7 @@ namespace Game.Models
 
         public void SetAnimation(AnimationType type)
         {
-            Console.WriteLine($"SetAnimation: {type}");
+            //Console.WriteLine($"SetAnimation: {type}");
             if (currentType != type)
             {
                 if (!animations.TryGetValue(type, out var animInfo))
@@ -109,9 +109,9 @@ namespace Game.Models
                 Console.WriteLine("FEHLER: currentAnimation ist null! Draw() abgebrochen.");
                 return;
             }
-            Console.WriteLine($"Draw: Row={currentAnimation.SpriteRow}, Index={characterIndex}, Size={characterSize}");
+            //Console.WriteLine($"Draw: Row={currentAnimation.SpriteRow}, Index={characterIndex}, Size={characterSize}");
 
-            Console.WriteLine($"Draw: SpriteRow={currentAnimation.SpriteRow}, Frame={characterIndex}");
+            //Console.WriteLine($"Draw: SpriteRow={currentAnimation.SpriteRow}, Frame={characterIndex}");
 
             float width = characterSize * 5;
             float height = characterSize * 5;
