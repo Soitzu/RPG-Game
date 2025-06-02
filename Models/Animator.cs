@@ -20,7 +20,7 @@ namespace Game.Models
         private AnimationInfo currentAnimation;
 
         private Dictionary<AnimationType, AnimationInfo> animations;
-        private bool isPlayingOnce = false;
+        public bool isPlayingOnce = false;
         private AnimationType previousAnimation;
         private Action? playOnceCallback;
 

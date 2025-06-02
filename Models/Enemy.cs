@@ -181,7 +181,11 @@ namespace Game.Models
 
             //currentAnimationType = AnimationType.Idle;
             UpdateSpriteHitBox();
-            Animator.SetAnimation(currentAnimationType);
+            if (!Animator.isPlayingOnce)
+            {
+                Animator.SetAnimation(currentAnimationType);
+            }
+
             UpdateAttack(deltaTime);
             Physics.Update(deltaTime);
             Animator.Update(deltaTime);

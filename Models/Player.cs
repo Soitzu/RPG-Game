@@ -34,8 +34,6 @@ namespace Game.Models
             bool moved = false;
             currentAnimationType = AnimationType.Idle;
 
-
-
             if (IsDead)
             {
                 if (!isDeadHandled)
@@ -149,7 +147,7 @@ namespace Game.Models
 
 
 
-        public new void Draw()
+        public void Draw()
         {
             Animator.Draw(Physics.Position, IsFacingLeft);
             Status.Draw();
