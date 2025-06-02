@@ -45,8 +45,7 @@ namespace Game.Models
 
         public void Seek(float deltaTime)
         {
-
-            // Cooldown between Actions is shit and currently not working. But it still looks nice the way it is
+            // Cooldown between Actions is shit and currently not working. But it still looks okayish the way it is
             if (_cooldownBetweenActions > 0)
             {
                 _cooldownBetweenActions -= deltaTime;
@@ -56,15 +55,11 @@ namespace Game.Models
             }
             else
             {
-
-
-
                 if (_moveTimer <= 0f)
                 {
 
                     int movement = rnd.Next(1, 4);
                     _moveTimer = 0.5f + (float)rnd.NextDouble() * 1.5f;
-
 
                     switch (movement)
                     {
@@ -92,14 +87,12 @@ namespace Game.Models
                     _moveTimer -= deltaTime;
 
                 }
-
             }
-
         }
 
         public void UpdateAI(float deltaTime)
         {
-            // Death function
+            // Death check
             if (IsDead)
             {
                 HandleDeath(isDeadHandled, deltaTime);
@@ -114,57 +107,13 @@ namespace Game.Models
                 Animator.Update(deltaTime);
                 return;
             }
-            // Death function end 
+            // Death check end
 
-            /*
-                        // --- KI-Logik ---
-                        if (Target != null && !Target.IsDead)
-                        {
-                            Vector2 myPos = Physics.Position;
-                            Vector2 targetPos = Target.Physics.Position;
-                            
 
-                            // Richtung zum Spieler
-                            float dx = targetPos.X - myPos.X;
-                            IsFacingLeft = dx < 0;
-
-                            // Angriff nur, wenn Cooldown abgelaufen
-                            attackCooldownTimer -= deltaTime;
-
-                            // <<< NEU: Angriff NUR starten, wenn NICHT IsAttacking!
-                            if (distance <= AttackRange)
-                            {
-                                if (!IsAttacking && attackCooldownTimer <= 0f)
-                                {
-                                    Attack();
-                                    attackCooldownTimer = AttackCooldown;
-                                }
-                            }
-                            else if (distance <= AggroRange)
-                            {
-                                float moveDir = MathF.Sign(dx);
-                                Physics.Velocity = new Vector2(moveDir * MoveSpeed, Physics.Velocity.Y);
-                                currentAnimationType = AnimationType.Move;
-                            }
-                            else
-                            {
-                                Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
-                                currentAnimationType = AnimationType.Idle;
-                            }
-                        }
-                        else
-                        {
-                            Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
-                            currentAnimationType = AnimationType.Idle;
-                        }
-
-                        // --- KI-End ---
-            */
-            // Enemy AI
+            // Get the Positions and the distaance
             Vector2 enemyPosition = Physics.Position;
             Vector2 playerPosition = Target.Physics.Position;
             float distance = Vector2.Distance(enemyPosition, playerPosition);
-
             float dx = playerPosition.X - enemyPosition.X;
 
             if (Target != null && !Target.IsDead)
@@ -278,6 +227,12 @@ namespace Game.Models
                 AttackHitBox = null;
                 HasHitPlayerThisAttack = false;
             }
+        }
+
+        public void Draw()
+        {
+            Animator.Draw(Physics.Position, IsFacingLeft);
+            Status.Draw();
         }
 
 

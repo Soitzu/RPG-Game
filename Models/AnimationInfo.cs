@@ -11,6 +11,7 @@ namespace Game.Models
         Idle,
         Move,
         Attack,
+        Hurt,
         Death
     }
 

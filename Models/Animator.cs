@@ -20,6 +20,10 @@ namespace Game.Models
         private AnimationInfo currentAnimation;
 
         private Dictionary<AnimationType, AnimationInfo> animations;
+        private bool isPlayingOnce = false;
+        private AnimationType previousAnimation;
+        private Action? playOnceCallback;
+
 
 
 
@@ -41,6 +45,7 @@ namespace Game.Models
             animationTimer = 0f;
         }
 
+
         public void SetAnimation(AnimationType type)
         {
             //Console.WriteLine($"SetAnimation: {type}");
@@ -58,6 +63,21 @@ namespace Game.Models
             }
         }
 
+        public void PlayOnce(AnimationType type, Action? onComplete = null)
+        {
+            if (!animations.ContainsKey(type))
+            {
+                Console.WriteLine($"WARNUNG: PlayOnce konnte Animation {type} nicht finden.");
+                return;
+            }
+
+            isPlayingOnce = true;
+            playOnceCallback = onComplete;
+            previousAnimation = currentType;
+            SetAnimation(type);
+        }
+
+
         public float GetAttackDuration()
         {
             return animations[AnimationType.Attack].FrameCount * animations[AnimationType.Attack].Interval;
@@ -71,26 +91,30 @@ namespace Game.Models
 
         public void Update(float deltaTime)
         {
-            if (currentAnimation == null)
-            {
-                Console.WriteLine("FEHLER: currentAnimation ist null! Wurde SetAnimation() korrekt aufgerufen?");
-                return;
-            }
 
             animationTimer += deltaTime;
 
             if (animationTimer >= currentAnimation.Interval)
             {
                 characterIndex++;
+                animationTimer = 0f;
+
                 if (characterIndex >= currentAnimation.FrameCount)
                 {
-                    if (currentType == AnimationType.Death)
+                    if (isPlayingOnce)
+                    {
+                        isPlayingOnce = false;
+                        playOnceCallback?.Invoke();
+                        SetAnimation(previousAnimation);
+                    }
+                    else if (currentType == AnimationType.Death)
                     {
                         characterIndex = currentAnimation.FrameCount - 1;
                     }
                     else
                     {
                         characterIndex = 0;
+
                     }
                 }
                 animationTimer = 0f;

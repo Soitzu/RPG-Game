@@ -32,8 +32,9 @@ public class Constants
             var orcAnimations = new Dictionary<AnimationType, AnimationInfo>
             {
               { AnimationType.Idle,   new AnimationInfo(0, 6, 0.12f) },
-              { AnimationType.Move,   new AnimationInfo(1, 8, 0.1f) },
+              { AnimationType.Move,   new AnimationInfo(1, 8, 0.1f)  },
               { AnimationType.Attack, new AnimationInfo(2, 6, 0.09f) },
+              { AnimationType.Hurt,   new AnimationInfo(4, 4, 0.1f)  },
               { AnimationType.Death,  new AnimationInfo(5, 4, 0.13f) }
             };
 
@@ -42,6 +43,7 @@ public class Constants
               { AnimationType.Idle,   new AnimationInfo(0, 6, 0.12f) },
               { AnimationType.Move,   new AnimationInfo(1, 8, 0.1f) },
               { AnimationType.Attack, new AnimationInfo(2, 6, 0.1f) },
+              { AnimationType.Hurt, new AnimationInfo(5, 4, 0.1f)   },
               { AnimationType.Death,  new AnimationInfo(6, 4, 0.1f) }
             };
 

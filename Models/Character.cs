@@ -53,6 +53,8 @@ namespace Game.Models
 
 
 
+
+
         public Character(string name, int health, int strength, Animator animator, Vector2 startPosition, float characterSize, float mass = 1.0f)
         {
             Name = name;
@@ -69,26 +71,7 @@ namespace Game.Models
         }
 
 
-        public virtual void Attack()
-        {
-            IsAttacking = true;
-            AttackTimer = Animator.GetAttackDuration();
-            currentAnimationType = AnimationType.Attack;
-            Animator.Reset();
-            SoundManager.PlaySound("attack_swing");
-            alreadyHitEnemies.Clear();
-            Animator.SetAnimation(currentAnimationType);
-        }
-
-        public void OnHitEnemy(Enemy enemy)
-        {
-            if (enemy.IsDead) return;
-            Console.WriteLine($"{Name} hat {enemy.Name} getroffen!");
-            enemy.TakeDamage(Strength);
-        }
-
-
-
+        // Move Methods
         public void Jump(float jumpStrength)
         {
             if (Physics.IsOnGround)
@@ -114,30 +97,52 @@ namespace Game.Models
             SpriteRow = 1;
             Physics.Velocity = new Vector2(-speed, Physics.Velocity.Y);
         }
+        // Move Methods end
 
+
+
+        // Damage Methods
+        public virtual void Attack()
+        {
+            IsAttacking = true;
+            AttackTimer = Animator.GetAttackDuration();
+            currentAnimationType = AnimationType.Attack;
+            Animator.Reset();
+            SoundManager.PlaySound("attack_swing");
+            alreadyHitEnemies.Clear();
+            Animator.SetAnimation(currentAnimationType);
+        }
+
+        public void OnHitEnemy(Enemy enemy)
+        {
+            if (enemy.IsDead) return;
+            Console.WriteLine($"{Name} hat {enemy.Name} getroffen!");
+            enemy.TakeDamage(Strength);
+        }
 
         public virtual void TakeDamage(int amount)
         {
-
+            Health -= amount;
             if (IsDead) return;
 
-            Health -= amount;
-
-            if (IsDead && !isDeadHandled)
-            {
-                isDeadHandled = true;
-                OnDeath();
-            }
+            Animator.PlayOnce(AnimationType.Hurt, () =>
+                {
+                    currentAnimationType = AnimationType.Hurt;
+                    Animator.SetAnimation(currentAnimationType);
+                    if (IsDead && !isDeadHandled)
+                    {
+                        isDeadHandled = true;
+                        OnDeath();
+                    }
+                });
         }
+        // Damage Methods end
 
+
+        // Death Methods
         protected virtual void OnDeath()
         {
             Animator.SetAnimation(AnimationType.Death);
-        }
-
-        public Rectangle GetHitbox()
-        {
-            return new Rectangle(Physics.Position.X, Physics.Position.Y, CharacterSize, CharacterSize);
         }
 
         public void HandleDeath(bool isDeadHandled, float deltaTime)
@@ -154,12 +159,21 @@ namespace Game.Models
             return;
 
         }
+        // Death Methods end
+
+
+        // Hitbox Methods
+        public Rectangle GetHitbox()
+        {
+            return new Rectangle(Physics.Position.X, Physics.Position.Y, CharacterSize, CharacterSize);
+        }
+
 
         public void DrawHitBox(Color color, float thickness = 2f)
         {
             if (AttackHitBox.HasValue)
             {
-                Raylib_cs.Rectangle hitbox = AttackHitBox.Value;
+                Rectangle hitbox = AttackHitBox.Value;
                 Raylib.DrawRectangleLinesEx(hitbox, thickness, color);
             }
         }
@@ -167,10 +181,10 @@ namespace Game.Models
         public void UpdateSpriteHitBox()
         {
             SpriteHitBox = new Rectangle(
-                Position.X,
-                Position.Y,
-                CharacterSize, // Breite des Sprites
-                CharacterSize  // Höhe des Sprites
+                Physics.Position.X - CharacterSize / 2,
+                Physics.Position.Y - CharacterSize / 2,
+                CharacterSize, // Width of Sprite
+                CharacterSize  // Height of Sprite
             );
         }
 
@@ -178,111 +192,11 @@ namespace Game.Models
         {
             Raylib.DrawRectangleLinesEx(SpriteHitBox, thickness, color);
         }
+        // Hitbox Method end
 
 
 
 
-
-
-
-        public void Update(float deltaTime)
-        {
-            float speed = 200f;
-            bool moved = false;
-
-            if (IsDead)
-            {
-                Animator.SetAnimation(AnimationType.Death);
-                Animator.Update(deltaTime);
-                return;
-            }
-
-
-            if (IsAttacking)
-            {
-                currentAnimationType = AnimationType.Attack;
-                AttackTimer -= deltaTime;
-                int currentFrame = Animator.GetCurrentFrame();
-
-                float xOffset = IsFacingLeft ? -AttackRange : CharacterSize;
-                Vector2 pos = Physics.Position;
-
-                AttackHitBox = new Rectangle(pos.X + xOffset, pos.Y, AttackWidth, AttackHeight);
-
-                if (AttackTimer <= 0)
-                {
-                    IsAttacking = false;
-                }
-            }
-            else
-            {
-                currentAnimationType = AnimationType.Idle;
-                AttackHitBox = null;
-            }
-
-            if (AttackTimer <= 0)
-            {
-                IsAttacking = false;
-                AttackHitBox = null;
-            }
-
-            if (!IsAttacking)
-            {
-                if (Raylib.IsKeyDown(KeyboardKey.Right))
-                {
-                    MoveRight(speed);
-                    moved = true;
-                    currentAnimationType = AnimationType.Move;
-                    if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
-                    {
-                        speed += 100;
-                        moved = true;
-                        MoveRight(speed);
-                    }
-                }
-
-                if (Raylib.IsKeyDown(KeyboardKey.Left))
-                {
-                    MoveLeft(speed);
-                    moved = true;
-                    currentAnimationType = AnimationType.Move;
-                    if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
-                    {
-                        speed += 100;
-                        moved = true;
-                        MoveLeft(speed);
-                    }
-
-                }
-
-                if (Raylib.IsKeyPressed(KeyboardKey.Z))
-                {
-                    Attack();
-                    currentAnimationType = AnimationType.Attack;
-                    Console.WriteLine("Attack!");
-                }
-
-            }
-
-
-            if (!moved)
-            {
-                Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
-            }
-            if (Raylib.IsKeyPressed(KeyboardKey.Space) && Physics.IsOnGround)
-            {
-                Jump(400f);
-            }
-            Animator.SetAnimation(currentAnimationType);
-            Physics.Update(deltaTime);
-            Animator.Update(deltaTime);
-        }
-
-        public void Draw()
-        {
-            Animator.Draw(Physics.Position, IsFacingLeft);
-            Status.Draw();
-        }
 
     }
 }
