@@ -24,6 +24,7 @@ namespace Game.Models
         protected float AttackTimer = 0f;
         protected float AttackDuration = 0.5f;
         public Rectangle? AttackHitBox { get; protected set; }
+        public Rectangle SpriteHitBox { get; protected set; }
 
         // Attack Stats
         public float AttackRange = 0;
@@ -134,13 +135,6 @@ namespace Game.Models
             Animator.SetAnimation(AnimationType.Death);
         }
 
-        protected virtual void IsDead2()
-        {
-
-
-        }
-
-
         public Rectangle GetHitbox()
         {
             return new Rectangle(Physics.Position.X, Physics.Position.Y, CharacterSize, CharacterSize);
@@ -160,6 +154,32 @@ namespace Game.Models
             return;
 
         }
+
+        public void DrawHitBox(Color color, float thickness = 2f)
+        {
+            if (AttackHitBox.HasValue)
+            {
+                Raylib_cs.Rectangle hitbox = AttackHitBox.Value;
+                Raylib.DrawRectangleLinesEx(hitbox, thickness, color);
+            }
+        }
+
+        public void UpdateSpriteHitBox()
+        {
+            SpriteHitBox = new Rectangle(
+                Position.X,
+                Position.Y,
+                CharacterSize, // Breite des Sprites
+                CharacterSize  // Höhe des Sprites
+            );
+        }
+
+        public void DrawSpriteHitBox(Color color, float thickness = 2f)
+        {
+            Raylib.DrawRectangleLinesEx(SpriteHitBox, thickness, color);
+        }
+
+
 
 
 

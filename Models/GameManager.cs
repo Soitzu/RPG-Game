@@ -6,6 +6,7 @@ namespace Game.Models
     {
         private Player hero;
         private List<Enemy> enemies;
+        private bool showHitboxes = false;
 
 
         public GameManager(Player hero, List<Enemy> enemies)
@@ -33,6 +34,11 @@ namespace Game.Models
             {
                 enemy.UpdateAI(deltaTime);
             }
+            if (Raylib.IsKeyPressed(KeyboardKey.H))
+            {
+                showHitboxes = !showHitboxes;
+                Console.WriteLine("Hitboxes: " + (showHitboxes ? "ON" : "OFF"));
+            }
 
 
         }
@@ -44,6 +50,18 @@ namespace Game.Models
             {
                 enemy.Draw();
             }
+
+            if (showHitboxes)
+            {
+                hero.DrawHitBox(Color.Red);
+                hero.DrawSpriteHitBox(Color.Green);
+                foreach (var enemy in enemies)
+                {
+                    enemy.DrawHitBox(Color.Red);
+                    enemy.DrawSpriteHitBox(Color.Green);
+                }
+            }
+
         }
 
 

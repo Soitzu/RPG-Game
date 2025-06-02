@@ -57,7 +57,7 @@ public class Constants
             {
                new Enemy("Orc", 10, 10, new Animator(orc, orcAnimations), new Vector2(700, 500), Constants.CHARACTER_SIZE),
             };
-            Player hero = new Player("Nikita", 50, 5, new Animator(soldier, soldierAnimations), startPosition, Constants.CHARACTER_SIZE);
+            Player hero = new Player("Nikita", 50000000, 5, new Animator(soldier, soldierAnimations), startPosition, Constants.CHARACTER_SIZE);
             //Enemy enemy = new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE);
 
 
@@ -69,7 +69,7 @@ public class Constants
 
             Raylib.InitAudioDevice();
             Music music = Raylib.LoadMusicStream("Music/Wav/Pixel 1.wav");
-            Raylib.PlayMusicStream(music);
+            //Raylib.PlayMusicStream(music);
             SoundManager.LoadSounds();
 
             GameManager gameManager = new GameManager(hero, enemies);

@@ -142,6 +142,7 @@ namespace Game.Models
             }
 
 
+            UpdateSpriteHitBox();
             Physics.Update(deltaTime);
             Animator.Update(deltaTime);
         }

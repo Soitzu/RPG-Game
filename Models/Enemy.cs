@@ -11,8 +11,9 @@ namespace Game.Models
 
         // AI-Parameter
         public float AggroRange = 400f;      // Aggro distance
+        public float StoppingDistance;
         public float MoveSpeed = 120f;       // Movement Speed
-        public float AttackCooldown = 1.5f;  // Time between Attacks
+        public float AttackCooldown = 1.0f;  // Time between Attacks
         private float attackCooldownTimer = 1f;
         private Random rnd = new Random();
 
@@ -96,15 +97,6 @@ namespace Game.Models
 
         }
 
-        public void SeekTarget(Player Target, float deltaTime)
-        {
-
-        }
-
-
-
-
-
         public void UpdateAI(float deltaTime)
         {
             // Death function
@@ -130,7 +122,7 @@ namespace Game.Models
                         {
                             Vector2 myPos = Physics.Position;
                             Vector2 targetPos = Target.Physics.Position;
-                            float distance = Vector2.Distance(myPos, targetPos);
+                            
 
                             // Richtung zum Spieler
                             float dx = targetPos.X - myPos.X;
@@ -168,16 +160,78 @@ namespace Game.Models
 
                         // --- KI-End ---
             */
+            // Enemy AI
+            Vector2 enemyPosition = Physics.Position;
+            Vector2 playerPosition = Target.Physics.Position;
+            float distance = Vector2.Distance(enemyPosition, playerPosition);
 
-            Vector2 myPos = Physics.Position;
-            Vector2 targetPos = Target.Physics.Position;
-            float distance = Vector2.Distance(myPos, targetPos);
+            float dx = playerPosition.X - enemyPosition.X;
 
-            // Phase 1, "seek" the enemy if he's not in range
-            Seek(deltaTime);
+            if (Target != null && !Target.IsDead)
+            {
+
+                if (distance <= AggroRange)
+                {
+                    IsFacingLeft = dx < 0;
+
+                    if (distance <= AttackRange + StoppingDistance)
+                    {
+                        Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
+                        attackCooldownTimer -= deltaTime;
+
+                        if (!IsAttacking && attackCooldownTimer <= 0f)
+                        {
+                            Attack();
+                            attackCooldownTimer = AttackCooldown;
+                            Animator.Reset();
+                        }
+                        else if (!IsAttacking)
+                        {
+                            currentAnimationType = AnimationType.Idle;
+                        }
+
+
+                    }
+                    else
+                    {
+                        float moveDir = MathF.Sign(dx);
+                        Physics.Velocity = new Vector2(moveDir * MoveSpeed, Physics.Velocity.Y);
+                        currentAnimationType = AnimationType.Move;
+                    }
+
+                }
+                else
+                {
+                    // Phase 1, "seek" the enemy if he's not in range
+                    Seek(deltaTime);
+                }
+
+
+            }
+            else
+            {
+                Seek(deltaTime);
+
+            }
+
+            if (IsAttacking)
+            {
+                currentAnimationType = AnimationType.Attack;
+                Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
+            }
+            else if (distance <= AggroRange && distance > AttackRange)
+            {
+                currentAnimationType = AnimationType.Move;
+            }
+            else
+            {
+                currentAnimationType = AnimationType.Idle;
+            }
+            // Enemy AI End
 
 
             //currentAnimationType = AnimationType.Idle;
+            UpdateSpriteHitBox();
             Animator.SetAnimation(currentAnimationType);
             UpdateAttack(deltaTime);
             Physics.Update(deltaTime);
@@ -216,6 +270,7 @@ namespace Game.Models
                 {
                     IsAttacking = false;
                     AttackHitBox = null;
+                    currentAnimationType = AnimationType.Idle;
                 }
             }
             else
