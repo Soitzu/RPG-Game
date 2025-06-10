@@ -12,8 +12,6 @@ namespace Game.Models
         public int Strength { get; private set; }
         public Animator Animator { get; private set; }
         public PhysicsBody Physics { get; private set; }
-        public int SpriteRow { get; set; }
-        public int Rotation { get; private set; }
         public float CharacterSize { get; set; }
         public float Mass { get; set; }
         public Status Status { get; private set; }
@@ -23,12 +21,11 @@ namespace Game.Models
         protected bool IsAttacking = false;
         protected float AttackTimer = 0f;
         protected float AttackDuration = 0.5f;
-        public Rectangle? AttackHitBox { get; protected set; }
-        public Rectangle SpriteHitBox { get; protected set; }
+        public Rectangle? AttackHitbox { get; protected set; }
+        public Rectangle SpriteHitbox { get; protected set; }
 
-        // Attack Stats
+        // Attacking Attributes
         public float AttackRange = 0;
-
         public float AttackWidth = 30;
         public float AttackHeight = 50;
         protected readonly int[] attackHitFrames = { 3, 4 };
@@ -37,14 +34,21 @@ namespace Game.Models
         public HashSet<Enemy> alreadyHitEnemies = new HashSet<Enemy>();
 
 
-        // returns true, if Health <= 0
-        public bool IsDead => Health <= 0;
-        protected bool isDeadHandled = false;
-
+        // Invincibility Attributes
         public bool IsInvincible = false;
+        public float InvincibilityTimer = 0f;
+        public float InvincibilityDuration = 0.3f;
+        public float TimeSinceDamage = 0f;
+
+        // Death Attributes
+        public bool IsDead => Health <= 0;
+        public bool IsHurt = false;
+        public bool IsHurtHandled = false;
+        protected bool isDeadHandled = false;
 
         public float TimeSinceDeath { get; protected set; } = 0f;
         public bool IsMarkedForRemoval { get; protected set; } = false;
+
 
         private AnimationType currentAnimationType = AnimationType.Idle;
 
@@ -72,6 +76,20 @@ namespace Game.Models
 
 
         // Move Methods
+        public void MoveRight(float speed)
+        {
+            IsFacingLeft = false;
+            currentAnimationType = AnimationType.Move;
+            Physics.Velocity = new Vector2(speed, Physics.Velocity.Y);
+        }
+
+        public void MoveLeft(float speed)
+        {
+            IsFacingLeft = true;
+            currentAnimationType = AnimationType.Move;
+            Physics.Velocity = new Vector2(-speed, Physics.Velocity.Y);
+        }
+
         public void Jump(float jumpStrength)
         {
             if (Physics.IsOnGround)
@@ -80,28 +98,9 @@ namespace Game.Models
 
             }
         }
-
-        public void MoveRight(float speed)
-        {
-
-            IsFacingLeft = false;
-            SpriteRow = 1;
-            Physics.Velocity = new Vector2(speed, Physics.Velocity.Y);
-
-
-        }
-
-        public void MoveLeft(float speed)
-        {
-            IsFacingLeft = true;
-            SpriteRow = 1;
-            Physics.Velocity = new Vector2(-speed, Physics.Velocity.Y);
-        }
         // Move Methods end
 
-
-
-        // Damage Methods
+        // Attack Methods
         public virtual void Attack()
         {
             IsAttacking = true;
@@ -122,19 +121,22 @@ namespace Game.Models
 
         public virtual void TakeDamage(int amount)
         {
-            Health -= amount;
-            if (IsDead) return;
+            if (IsDead || IsInvincible) return;
 
-            Animator.PlayOnce(AnimationType.Hurt, () =>
-                {
-                    currentAnimationType = AnimationType.Hurt;
-                    Animator.SetAnimation(currentAnimationType);
-                    if (IsDead && !isDeadHandled)
+            Health -= amount;
+            IsHurt = true;
+
+            if (!Animator.isPlayingOnce)
+            {
+                Animator.PlayOnce(AnimationType.Hurt, () =>
                     {
-                        isDeadHandled = true;
-                        OnDeath();
-                    }
-                });
+                        IsHurt = false;
+                        IsHurtHandled = false;
+
+                    });
+                IsInvincible = true;
+                InvincibilityTimer = InvincibilityDuration;
+            }
         }
         // Damage Methods end
 
@@ -151,7 +153,7 @@ namespace Game.Models
             {
                 isDeadHandled = true;
                 IsAttacking = false;
-                AttackHitBox = null;
+                AttackHitbox = null;
             }
 
             Animator.SetAnimation(AnimationType.Death);
@@ -163,34 +165,33 @@ namespace Game.Models
 
 
         // Hitbox Methods
-        public Rectangle GetHitbox()
+        public Rectangle GetSpriteHitbox()
         {
-            return new Rectangle(Physics.Position.X, Physics.Position.Y, CharacterSize, CharacterSize);
+            return new Rectangle(Physics.Position.X - CharacterSize / 2, Physics.Position.Y - CharacterSize / 2, CharacterSize, CharacterSize);
         }
 
-
-        public void DrawHitBox(Color color, float thickness = 2f)
+        public void DrawAttackHitbox(Color color, float thickness = 2f)
         {
-            if (AttackHitBox.HasValue)
+            if (AttackHitbox.HasValue)
             {
-                Rectangle hitbox = AttackHitBox.Value;
+                Rectangle hitbox = AttackHitbox.Value;
                 Raylib.DrawRectangleLinesEx(hitbox, thickness, color);
             }
         }
 
-        public void UpdateSpriteHitBox()
+        public void UpdateSpriteHitbox()
         {
-            SpriteHitBox = new Rectangle(
+            SpriteHitbox = new Rectangle(
                 Physics.Position.X - CharacterSize / 2,
                 Physics.Position.Y - CharacterSize / 2,
-                CharacterSize, // Width of Sprite
-                CharacterSize  // Height of Sprite
+                CharacterSize,
+                CharacterSize
             );
         }
 
-        public void DrawSpriteHitBox(Color color, float thickness = 2f)
+        public void DrawSpriteHitbox(Color color, float thickness = 2f)
         {
-            Raylib.DrawRectangleLinesEx(SpriteHitBox, thickness, color);
+            Raylib.DrawRectangleLinesEx(SpriteHitbox, thickness, color);
         }
         // Hitbox Method end
 

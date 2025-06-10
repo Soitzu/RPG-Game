@@ -53,12 +53,12 @@ namespace Game.Models
 
             if (showHitboxes)
             {
-                hero.DrawHitBox(Color.Red);
-                hero.DrawSpriteHitBox(Color.Green);
+                hero.DrawAttackHitbox(Color.Red);
+                hero.DrawSpriteHitbox(Color.Green);
                 foreach (var enemy in enemies)
                 {
-                    enemy.DrawHitBox(Color.Red);
-                    enemy.DrawSpriteHitBox(Color.Green);
+                    enemy.DrawAttackHitbox(Color.Red);
+                    enemy.DrawSpriteHitbox(Color.Green);
                 }
             }
 
@@ -72,7 +72,7 @@ namespace Game.Models
         {
             foreach (var enemy in enemies)
             {
-                if (hero.AttackHitBox.HasValue && Raylib.CheckCollisionRecs(hero.AttackHitBox.Value, enemy.GetHitbox()))
+                if (hero.AttackHitbox.HasValue && Raylib.CheckCollisionRecs(hero.AttackHitbox.Value, enemy.GetSpriteHitbox()))
                 {
 
                     int currentFrame = hero.Animator.GetCurrentFrame();
@@ -92,7 +92,7 @@ namespace Game.Models
         {
             foreach (var enemy in enemies)
             {
-                if (enemy.AttackHitBox.HasValue && Raylib.CheckCollisionRecs(enemy.AttackHitBox.Value, hero.GetHitbox()))
+                if (enemy.AttackHitbox.HasValue && Raylib.CheckCollisionRecs(enemy.AttackHitbox.Value, hero.GetSpriteHitbox()))
                 {
                     int currentFrame = enemy.Animator.GetCurrentFrame();
                     if ((currentFrame == 3 || currentFrame == 4) && !hero.IsInvincible && !enemy.HasHitPlayerThisAttack)

@@ -55,11 +55,12 @@ public class Constants
 
 
 
+
+            Player hero = new Player("Nikita", 50000000, 5, new Animator(soldier, soldierAnimations), startPosition, Constants.CHARACTER_SIZE);
             List<Enemy> enemies = new List<Enemy>
             {
-               new Enemy("Orc", 50, 10, new Animator(orc, orcAnimations), new Vector2(700, 500), Constants.CHARACTER_SIZE),
+               new Enemy("Orc", 50, 10, new Animator(orc, orcAnimations), new Vector2(700, 500), Constants.CHARACTER_SIZE, hero),
             };
-            Player hero = new Player("Nikita", 50000000, 5, new Animator(soldier, soldierAnimations), startPosition, Constants.CHARACTER_SIZE);
             //Enemy enemy = new Enemy("Orc", 50, 50, new Animator(orc), new Vector2(500, 500), Constants.CHARACTER_SIZE);
 
 
@@ -85,6 +86,8 @@ public class Constants
                 Console.WriteLine($"{kv.Key}: Row={kv.Value.SpriteRow}, Frames={kv.Value.FrameCount}, Interval={kv.Value.Interval}");
 
 
+            Random rnd = new Random();
+            int movement = rnd.Next(500, 1000);
 
 
 
@@ -110,6 +113,11 @@ public class Constants
 
 
                 gameManager.Draw();
+
+                if (Raylib.IsKeyPressed(KeyboardKey.S))
+                {
+                    enemies.Add(new Enemy("Orc", 50, 10, new Animator(orc, orcAnimations), new Vector2(rnd.Next(500, 800), 500), Constants.CHARACTER_SIZE, hero));
+                }
 
 
 

@@ -29,9 +29,10 @@ namespace Game.Models
 
 
 
-        public Enemy(string name, int health, int strength, Animator animator, Vector2 startPosition, float characterSize, float mass = 1.0f) : base(name, health, strength, animator, startPosition, characterSize, mass)
+        public Enemy(string name, int health, int strength, Animator animator, Vector2 startPosition, float characterSize, Player target, float mass = 1.0f) : base(name, health, strength, animator, startPosition, characterSize, mass)
         {
             AttackRange = 100f;
+            Target = target;
 
 
         }
@@ -46,11 +47,12 @@ namespace Game.Models
         public void Seek(float deltaTime)
         {
             // Cooldown between Actions is shit and currently not working. But it still looks okayish the way it is
+
             if (_cooldownBetweenActions > 0)
             {
                 _cooldownBetweenActions -= deltaTime;
-                currentAnimationType = AnimationType.Idle;
                 Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
+                currentAnimationType = AnimationType.Idle;
                 return;
             }
             else
@@ -60,24 +62,25 @@ namespace Game.Models
 
                     int movement = rnd.Next(1, 4);
                     _moveTimer = 0.5f + (float)rnd.NextDouble() * 1.5f;
+                    currentAnimationType = AnimationType.Idle;
 
                     switch (movement)
                     {
                         case 1:
-                            Physics.Velocity = new Vector2(-MoveSpeed, Physics.Velocity.Y);
                             currentAnimationType = AnimationType.Move;
+                            Physics.Velocity = new Vector2(-MoveSpeed, Physics.Velocity.Y);
                             IsFacingLeft = true;
                             Console.WriteLine("Action: Move Left");
                             break;
                         case 2:
-                            Physics.Velocity = new Vector2(MoveSpeed, Physics.Velocity.Y);
                             currentAnimationType = AnimationType.Move;
+                            Physics.Velocity = new Vector2(MoveSpeed, Physics.Velocity.Y);
                             IsFacingLeft = false;
                             Console.WriteLine("Action: Move Right");
                             break;
                         case 3:
-                            Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
                             currentAnimationType = AnimationType.Idle;
+                            Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
                             Console.WriteLine("Action: Idle");
                             break;
                     }
@@ -162,25 +165,11 @@ namespace Game.Models
                 Seek(deltaTime);
 
             }
-
-            if (IsAttacking)
-            {
-                currentAnimationType = AnimationType.Attack;
-                Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
-            }
-            else if (distance <= AggroRange && distance > AttackRange)
-            {
-                currentAnimationType = AnimationType.Move;
-            }
-            else
-            {
-                currentAnimationType = AnimationType.Idle;
-            }
             // Enemy AI End
 
 
             //currentAnimationType = AnimationType.Idle;
-            UpdateSpriteHitBox();
+            UpdateSpriteHitbox();
             if (!Animator.isPlayingOnce)
             {
                 Animator.SetAnimation(currentAnimationType);
@@ -210,25 +199,26 @@ namespace Game.Models
                 // Hitbox nur in Trefferframes setzen
                 if (currentFrame == 3 || currentFrame == 4)
                 {
-                    float xOffset = IsFacingLeft ? -AttackRange : CharacterSize;
+                    float xOffset = IsFacingLeft ? -AttackWidth : CharacterSize;
                     Vector2 pos = Physics.Position;
-                    AttackHitBox = new Rectangle(pos.X + xOffset, pos.Y, AttackWidth, AttackHeight);
+                    AttackHitbox = new Rectangle(pos.X - CharacterSize / 2 + xOffset, pos.Y, AttackWidth, AttackHeight);
+
                 }
                 else
                 {
-                    AttackHitBox = null;
+                    AttackHitbox = null;
                 }
 
                 if (AttackTimer <= 0)
                 {
                     IsAttacking = false;
-                    AttackHitBox = null;
+                    AttackHitbox = null;
                     currentAnimationType = AnimationType.Idle;
                 }
             }
             else
             {
-                AttackHitBox = null;
+                AttackHitbox = null;
                 HasHitPlayerThisAttack = false;
             }
         }

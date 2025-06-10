@@ -12,7 +12,6 @@ namespace Game.Models
         private AnimationType lastAnimationType = AnimationType.Idle;
 
         private bool isInventoryOpen = false;
-
         public Inventory Inventory { get; private set; }
 
 
@@ -28,7 +27,7 @@ namespace Game.Models
 
 
 
-        public new void Update(float deltaTime)
+        public void Update(float deltaTime)
         {
             float speed = 200f;
             bool moved = false;
@@ -40,7 +39,7 @@ namespace Game.Models
                 {
                     isDeadHandled = true;
                     IsAttacking = false;
-                    AttackHitBox = null;
+                    AttackHitbox = null;
                 }
 
                 TimeSinceDeath += deltaTime;
@@ -54,6 +53,25 @@ namespace Game.Models
                 return;
             }
 
+            if (IsHurt || Animator.isPlayingOnce)
+            {
+                Physics.Velocity = new Vector2(0, Physics.Velocity.Y);
+                currentAnimationType = AnimationType.Hurt;
+                Animator.Update(deltaTime);
+                return;
+            }
+
+            if (IsInvincible)
+            {
+                InvincibilityTimer -= deltaTime;
+                if (InvincibilityTimer <= 0f)
+                {
+                    IsInvincible = false;
+                    InvincibilityTimer = 0f;
+                }
+
+            }
+
 
 
 
@@ -63,10 +81,10 @@ namespace Game.Models
                 AttackTimer -= deltaTime;
                 int currentFrame = Animator.GetCurrentFrame();
 
-                float xOffset = IsFacingLeft ? -AttackRange : CharacterSize;
+                float xOffset = IsFacingLeft ? -AttackWidth : CharacterSize;
                 Vector2 pos = Physics.Position;
+                AttackHitbox = new Rectangle(pos.X - CharacterSize / 2 + xOffset, pos.Y, AttackWidth, AttackHeight);
 
-                AttackHitBox = new Rectangle(pos.X + xOffset, pos.Y, AttackWidth, AttackHeight);
 
                 if (AttackTimer <= 0)
                 {
@@ -75,16 +93,9 @@ namespace Game.Models
             }
             else
             {
-                SpriteRow = 0;
-                AttackHitBox = null;
+                currentAnimationType = AnimationType.Idle;
+                AttackHitbox = null;
             }
-
-            if (AttackTimer <= 0)
-            {
-                IsAttacking = false;
-                AttackHitBox = null;
-            }
-
             if (!IsAttacking)
             {
                 if (Raylib.IsKeyDown(KeyboardKey.Right))
@@ -140,7 +151,7 @@ namespace Game.Models
             }
 
 
-            UpdateSpriteHitBox();
+            UpdateSpriteHitbox();
             Physics.Update(deltaTime);
             Animator.Update(deltaTime);
         }
@@ -149,6 +160,10 @@ namespace Game.Models
 
         public void Draw()
         {
+            Color drawColor = IsInvincible && (int)(TimeSinceDamage * 10) % 2 == 0
+         ? new Color(255, 255, 255, 150) // Halb-transparent
+         : Color.White;
+
             Animator.Draw(Physics.Position, IsFacingLeft);
             Status.Draw();
             Status.DrawCharacterWindow();
