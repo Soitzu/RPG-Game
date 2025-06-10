@@ -201,7 +201,7 @@ namespace Game.Models
                 {
                     float xOffset = IsFacingLeft ? -AttackWidth : CharacterSize;
                     Vector2 pos = Physics.Position;
-                    AttackHitbox = new Rectangle(pos.X - CharacterSize / 2 + xOffset, pos.Y, AttackWidth, AttackHeight);
+                    AttackHitbox = new Rectangle(pos.X - CharacterSize / 2 + xOffset, pos.Y - CharacterSize / 2, AttackWidth, AttackHeight);
 
                 }
                 else

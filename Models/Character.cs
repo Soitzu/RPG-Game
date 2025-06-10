@@ -26,8 +26,8 @@ namespace Game.Models
 
         // Attacking Attributes
         public float AttackRange = 0;
-        public float AttackWidth = 30;
-        public float AttackHeight = 50;
+        public float AttackWidth = 50;
+        public float AttackHeight = 100;
         protected readonly int[] attackHitFrames = { 3, 4 };
         protected bool hasHitInCurrentAttack = false;
         public bool hasHitEnemy = false;
